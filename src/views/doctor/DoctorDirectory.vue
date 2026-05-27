@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-5">
     <div class="flex items-center justify-between">
-      <div><h2 class="text-2xl font-bold text-gray-900">Doctors</h2><p class="text-gray-500 text-sm mt-0.5">Licensed physician directory</p></div>
+      <div><h2 class="text-2xl font-bold font-mono text-[#18265F]">Doctors</h2><p class="text-gray-500 text-sm mt-0.5">Licensed physician directory</p></div>
       <button @click="openCreate" class="btn-primary">+ Add Doctor</button>
     </div>
 

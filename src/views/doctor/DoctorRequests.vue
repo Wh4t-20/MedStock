@@ -2,7 +2,7 @@
   <div class="space-y-5">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Lab Requests</h2>
+        <h2 class="text-2xl font-bold font-mono text-[#18265F]">Lab Requests</h2>
         <p class="text-gray-500 text-sm mt-0.5">Manage and create laboratory test requests</p>
       </div>
       <button @click="showCreate = true" class="btn-primary">+ New Request</button>
@@ -10,15 +10,38 @@
 
     <!-- Filters -->
     <div class="flex flex-wrap gap-3">
-      <input v-model="search" placeholder="Search patient, doctor…" class="form-input max-w-xs" />
-      <select v-model="filterStatus" class="form-select w-40">
-        <option value="">All Statuses</option>
-        <option>Pending</option>
-        <option>In Progress</option>
-        <option>Completed</option>
-        <option>Cancelled</option>
-      </select>
-    </div>
+  <input
+    v-model="search"
+    placeholder="Search patient, doctor…"
+    class="form-input max-w-xs"
+  />
+
+  <!-- Styled Select -->
+  <div class="relative w-48">
+    <select
+      v-model="filterStatus"
+      class="form-select appearance-none w-full bg-white pr-10 shadow-sm"
+    >
+      <option value="">All Statuses</option>
+      <option value="pending">Pending</option>
+      <option value="in-progress">In Progress</option>
+      <option value="completed">Completed</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+
+    <!-- Dropdown Icon -->
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      stroke-width="2"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
+    </svg>
+  </div>
+</div>
 
     <!-- Table -->
     <div class="card overflow-hidden">
@@ -250,3 +273,4 @@ function formatDate(d: string) {
   return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 </script>
+

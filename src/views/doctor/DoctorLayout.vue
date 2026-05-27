@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen flex bg-gray-50 font-public-sans">
+    <!-- Sidebar -->
     <aside class="group/sidebar w-20 hover:w-64 bg-[#1A1F3A] text-white flex flex-col shrink-0 transition-all duration-300 ease-in-out overflow-hidden z-10">
       
+      <!-- Top Branding Section -->
       <div class="px-5 pt-6 pb-5 border-b border-white/10 h-[88px] flex flex-col justify-center shrink-0">
         <RouterLink to="/" class="font-public-sans font-bold text-xl tracking-tight flex items-center gap-2 whitespace-nowrap">
           <Activity class="w-6 h-6 text-[#F5A623] shrink-0" />
@@ -17,6 +19,7 @@
         </RouterLink>
       </div>
 
+      <!-- Navigation Links -->
       <nav class="flex-1 p-4 space-y-1 overflow-y-auto overflow-x-hidden">
         <NavItem to="/doctor/dashboard"  :icon="LayoutDashboard" label="Dashboard" />
         <NavItem to="/doctor/requests"   :icon="ClipboardList"   label="Lab Requests" />
@@ -25,7 +28,20 @@
         <NavItem to="/doctor/test-types" :icon="FlaskConical"     label="Test Types" />
       </nav>
 
-      <div class="p-4 border-t border-white/10 shrink-0">
+      <!-- Sidebar Footer Section -->
+      <div class="p-4 border-t border-white/10 shrink-0 space-y-2">
+        <!-- User Profile Card -->
+        <div class="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/5 min-w-[180px]">
+          <div class="w-8 h-8 rounded-full bg-[#F5A623] text-[#1A1F3A] flex items-center justify-center text-xs font-bold font-mono shrink-0 select-none">
+            LF
+          </div>
+          <div class="flex-1 min-w-0 opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-300 ease-in-out whitespace-nowrap">
+            <p class="text-xs font-semibold text-white truncate">LUISA FERNANDEZ</p>
+            <p class="text-[10px] text-white/40 truncate">dr.aquino@clinic.com</p>
+          </div>
+        </div>
+
+        <!-- Back to Home Link -->
         <RouterLink to="/" class="flex items-center gap-2 text-white/60 hover:text-white text-sm transition-colors px-3 py-2 rounded-lg hover:bg-white/5 whitespace-nowrap">
           <ArrowLeft class="w-4 h-4 shrink-0" />
           <span class="opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-300 ease-in-out">
@@ -35,11 +51,26 @@
       </div>
     </aside>
 
+    <!-- Main Content Panel -->
     <div class="flex-1 flex flex-col min-w-0">
-      <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <h1 class="text-lg font-semibold text-gray-900">Doctor Portal</h1>
-        <span class="text-sm text-gray-500">{{ today }}</span>
+      <!-- Top Header Area -->
+      <header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+        <h1 class="text-lg font-semibold text-[#18265F]">Doctor's Portal</h1>
+        
+       
+        <div class="flex items-center gap-3">
+          <button class="flex items-center gap-2.5 p-1.5 pr-3 transition-colors group/profile text-left">
+            <div class="w-8 h-8 rounded-full bg-[#1A1F3A] text-[#F5A623] flex items-center justify-center text-xs font-bold font-mono shadow-sm">
+              LF
+            </div>
+            <div class="hidden sm:block">
+              <p class="text-xs font-semibold text-gray-800 leading-tight">Dr. Luisa Fernandez</p>
+              <p class="text-[10px] text-gray-400 font-medium">Physician</p>
+            </div>
+          </button>
+        </div>
       </header>
+      
       <main class="flex-1 p-6 overflow-auto">
         <RouterView />
       </main>
@@ -51,7 +82,7 @@
 import { RouterLink, RouterView } from 'vue-router'
 import NavItem from '@/components/NavItem.vue'
 import { 
-  Activity, // Used as the core brand icon
+  Activity, 
   LayoutDashboard, 
   ClipboardList, 
   Users, 
@@ -59,6 +90,4 @@ import {
   FlaskConical, 
   ArrowLeft 
 } from 'lucide-vue-next'
-
-const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-2xl font-mono font-bold text-gray-900">Dashboard</h2>
+      <h2 class="text-2xl font-mono font-bold text-[#18265F]">Dashboard</h2>
       <p class="text-gray-500 text-sm mt-1">Overview of all laboratory activity</p>
     </div>
 
@@ -16,7 +16,7 @@
     <!-- Recent requests -->
     <div class="card overflow-hidden">
       <div class="flex items-center justify-between p-5 border-b border-gray-100">
-        <h3 class="font-semibold text-[#18265F]">Recent Lab Requests</h3>
+        <h3 class="font-semibold font-inter text-[#18265F]">Recent Lab Requests</h3>
         <RouterLink to="/doctor/requests" class="text-sm text-primary-600 hover:text-primary-800 font-medium">View all →</RouterLink>
       </div>
       <div class="overflow-x-auto">
@@ -28,6 +28,7 @@
               <th class="table-head">Date</th>
               <th class="table-head">Tests</th>
               <th class="table-head">Status</th>
+              <th class="table-head">Notes</th>
             </tr>
           </thead>
           <tbody>
@@ -44,6 +45,7 @@
                 </div>
               </td>
               <td class="table-cell"><StatusBadge :status="req.status" /></td>
+              <td class="table-cell">{{ req.notes || '—' }}</td>
             </tr>
           </tbody>
         </table>

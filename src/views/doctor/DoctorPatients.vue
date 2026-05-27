@@ -2,7 +2,7 @@
   <div class="space-y-5">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Patients</h2>
+        <h2 class="text-2xl font-bold font-mono text-[#18265F]">Patients</h2>
         <p class="text-gray-500 text-sm mt-0.5">Manage patient records</p>
       </div>
       <button @click="openCreate" class="btn-primary">+ Add Patient</button>
