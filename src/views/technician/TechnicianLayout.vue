@@ -154,12 +154,10 @@ import NavItem from '@/components/NavItem.vue'
 import {
   Activity,
   LayoutDashboard,
-  ClipboardList,
   Layers,
   BookSearch,
   UserRound,
-  FlaskConical,
   ArrowLeft
 } from 'lucide-vue-next'
-const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+
 </script>

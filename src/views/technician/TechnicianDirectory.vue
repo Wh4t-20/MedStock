@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-5">
     <div class="flex items-center justify-between">
-      <div><h2 class="text-2xl font-bold text-gray-900">Lab Technicians</h2><p class="text-gray-500 text-sm mt-0.5">Registered laboratory staff</p></div>
+      <div><h2 class="text-2xl font-mono font-bold text-[#18265F]">Lab Technicians</h2><p class="text-gray-500 text-sm mt-0.5">Registered laboratory staff</p></div>
       <button @click="openCreate" class="btn-primary">+ Add Technician</button>
     </div>
 
