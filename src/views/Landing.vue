@@ -1,0 +1,69 @@
+<template>
+  <div class="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 flex flex-col">
+    <!-- Header -->
+    <header class="flex items-center justify-between px-8 py-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-accent-400 rounded-xl flex items-center justify-center font-bold text-primary-900 text-xl">M</div>
+        <span class="text-white text-xl font-bold tracking-tight">MedLab<span class="text-accent-400">System</span></span>
+      </div>
+      <span class="text-primary-300 text-sm">Medical Laboratory Management</span>
+    </header>
+
+    <!-- Hero -->
+    <main class="flex-1 flex flex-col items-center justify-center px-6 text-center pb-16">
+      <div class="inline-flex items-center gap-2 bg-primary-700/60 border border-primary-600 rounded-full px-4 py-1.5 mb-6">
+        <span class="w-2 h-2 rounded-full bg-accent-400 animate-pulse"></span>
+        <span class="text-primary-200 text-sm font-medium">System Online</span>
+      </div>
+
+      <h1 class="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-4">
+        Medical Laboratory<br>
+        <span class="text-accent-400">Management System</span>
+      </h1>
+      <p class="text-primary-300 text-lg max-w-xl mb-12">
+        Streamlined test requests, results, and patient management for your laboratory — all in one place.
+      </p>
+
+      <!-- Portal cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-3xl">
+        <RouterLink to="/doctor" class="portal-card group">
+          <div class="portal-icon bg-blue-100 group-hover:bg-blue-200">🩺</div>
+          <h2 class="text-lg font-bold text-gray-900 mt-3">Doctor Portal</h2>
+          <p class="text-sm text-gray-500 mt-1">Request lab tests, view patient history, manage orders</p>
+          <div class="mt-4 btn-primary text-sm justify-center">Enter Portal →</div>
+        </RouterLink>
+
+        <RouterLink to="/patient" class="portal-card group">
+          <div class="portal-icon bg-yellow-100 group-hover:bg-yellow-200">🧑‍⚕️</div>
+          <h2 class="text-lg font-bold text-gray-900 mt-3">Patient Portal</h2>
+          <p class="text-sm text-gray-500 mt-1">View your lab requests, results, and medical records</p>
+          <div class="mt-4 btn-accent text-sm justify-center">Enter Portal →</div>
+        </RouterLink>
+
+        <RouterLink to="/technician" class="portal-card group">
+          <div class="portal-icon bg-green-100 group-hover:bg-green-200">🔬</div>
+          <h2 class="text-lg font-bold text-gray-900 mt-3">Technician Portal</h2>
+          <p class="text-sm text-gray-500 mt-1">Process test queue, enter results, manage assignments</p>
+          <div class="mt-4 btn-secondary text-sm justify-center border-primary-600 text-primary-700 hover:bg-primary-50">Enter Portal →</div>
+        </RouterLink>
+      </div>
+    </main>
+
+    <footer class="text-center text-primary-500 text-sm pb-6">
+      © 2026 MedLab System · All rights reserved
+    </footer>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { RouterLink } from 'vue-router'
+</script>
+
+<style scoped>
+.portal-card {
+  @apply bg-white rounded-2xl p-6 text-left shadow-lg hover:shadow-2xl transition-all duration-200 hover:-translate-y-1 cursor-pointer;
+}
+.portal-icon {
+  @apply w-14 h-14 rounded-2xl flex items-center justify-center text-3xl transition-colors;
+}
+</style>
