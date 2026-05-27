@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-2xl font-bold text-gray-900">Dashboard</h2>
+      <h2 class="text-2xl font-mono font-bold text-gray-900">Dashboard</h2>
       <p class="text-gray-500 text-sm mt-1">Overview of all laboratory activity</p>
     </div>
 
@@ -16,7 +16,7 @@
     <!-- Recent requests -->
     <div class="card overflow-hidden">
       <div class="flex items-center justify-between p-5 border-b border-gray-100">
-        <h3 class="font-semibold text-gray-900">Recent Lab Requests</h3>
+        <h3 class="font-semibold text-[#18265F]">Recent Lab Requests</h3>
         <RouterLink to="/doctor/requests" class="text-sm text-primary-600 hover:text-primary-800 font-medium">View all →</RouterLink>
       </div>
       <div class="overflow-x-auto">
@@ -25,7 +25,6 @@
             <tr class="border-b border-gray-100">
               <th class="table-head">Request ID</th>
               <th class="table-head">Patient</th>
-              <th class="table-head">Doctor</th>
               <th class="table-head">Date</th>
               <th class="table-head">Tests</th>
               <th class="table-head">Status</th>
@@ -34,8 +33,7 @@
           <tbody>
             <tr v-for="req in recent" :key="req.request_id" class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
               <td class="table-cell font-mono text-primary-700 font-medium">{{ req.request_id }}</td>
-              <td class="table-cell">{{ req.patient.first_name }} {{ req.patient.last_name }}</td>
-              <td class="table-cell">Dr. {{ req.doctor.last_name }}</td>
+              <td class="table-cell">{{ req.patient.first_name }} {{ req.patient.last_name }}</td>  
               <td class="table-cell">{{ formatDate(req.request_date) }}</td>
               <td class="table-cell">
                 <div class="flex flex-wrap gap-1">
