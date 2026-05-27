@@ -18,31 +18,18 @@
 
   <!-- Styled Select -->
   <div class="relative w-48">
-    <select
-      v-model="filterStatus"
-      class="form-select appearance-none w-full bg-white pr-10 shadow-sm"
-    >
-      <option value="">All Statuses</option>
-      <option value="pending">Pending</option>
-      <option value="in-progress">In Progress</option>
-      <option value="completed">Completed</option>
-      <option value="cancelled">Cancelled</option>
-    </select>
-
-    <!-- Dropdown Icon -->
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      stroke-width="2"
-    >
-      <path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" />
-    </svg>
-  </div>
+    <select 
+  v-model="filterStatus" 
+  class="w-44 px-3 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer transition-colors duration-150 ease-in-out focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+>
+  <option value="" class="text-gray-500">All Statuses</option>
+  <option value="Pending" class="text-amber-600 font-medium">Pending</option>
+  <option value="Processing" class="text-blue-600 font-medium">In Progress</option>
+  <option value="Completed" class="text-green-600 font-medium">Completed</option>
+  <option value="Cancelled" class="text-rose-600 font-medium">Cancelled</option>
+</select>
 </div>
-
+</div>
     <!-- Table -->
     <div class="card overflow-hidden">
       <div class="overflow-x-auto">
