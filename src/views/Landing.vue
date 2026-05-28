@@ -52,7 +52,7 @@
           <span class="text-3xl font-bold text-white tracking-tight">MedLab<span class="text-accent-400">System</span></span>
         </div>
         <p class="text-primary-300 text-sm">Medical Laboratory Management</p>
-      </div> -->
+      </div> 
 
       <!-- Card -->
       <div class="bg-white rounded-2xl shadow-2xl p-8">
@@ -61,8 +61,8 @@
 
         <form @submit.prevent="handleLogin" class="space-y-4">
           <!-- Email -->
-          <div>
-            <label class="form-label">Email</label>
+          <div class="text-left" >
+            <label class="form-label text-base mb-1 font-bold">Email</label>
             <input
               type="email"
               v-model="email"
@@ -70,12 +70,13 @@
               autocomplete="email"
               required
               class="form-input"
+              align
             />
           </div>
 
           <!-- Password -->
-          <div>
-            <label class="form-label">Password</label>
+          <div class = "text-left">
+            <label class="form-label text-base font-bold mb-1" >Password</label>
             <input
               type="password"
               v-model="password"
@@ -114,6 +115,12 @@
             <div class="bg-blue-50 text-blue-700 rounded-xl py-2 px-1 font-medium">🩺 Doctor</div>
             <div class="bg-yellow-50 text-yellow-700 rounded-xl py-2 px-1 font-medium">🧑‍⚕️ Patient</div>
             <div class="bg-green-50 text-green-700 rounded-xl py-2 px-1 font-medium">🔬 Technician</div>
+            <div 
+              @click="router.push('/crud')" 
+              class="bg-purple-50 text-purple-700 rounded-xl py-2 px-1 font-medium cursor-pointer hover:bg-purple-100 transition-colors active:scale-95 select-none"
+            >
+              ⚙️ Admin
+            </div>
           </div>
         </div>
       </div>
@@ -125,13 +132,12 @@
     </main>
 
     <footer class="text-center text-primary-500 text-sm pb-6">
-      © 2026 MedLab System · All rights reserved
+      rararahhhh goated ahhhhh
     </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/api/supabase'
@@ -161,14 +167,14 @@ const handleLogin = async () => {
       // Check which entity this user belongs to
       const [{ data: doctor }, { data: patient }, { data: technician }] = await Promise.all([
         supabase.from('Doctor').select('doctor_id').eq('user_id', uid).maybeSingle(),
-        supabase.from('patient').select('patient_id').eq('user_id', uid).maybeSingle(),
-        supabase.from('lab_technician').select('technician_id').eq('user_id', uid).maybeSingle(),
+        supabase.from('Patient').select('patient_id').eq('user_id', uid).maybeSingle(),
+        supabase.from('LabTechnician').select('technician_id').eq('user_id', uid).maybeSingle(),
       ])
 
       if (doctor)      router.push('/doctor/dashboard')
       else if (patient) router.push('/patient/dashboard')
       else if (technician) router.push('/technician/dashboard')
-      else errorMessage.value = 'No role assigned to this account. Contact your administrator.'
+      else errorMessage.value = 'No role assigned to this account.'
     }
   } catch {
     errorMessage.value = 'An unexpected error occurred.'
