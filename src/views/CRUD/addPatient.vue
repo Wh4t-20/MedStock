@@ -113,7 +113,6 @@ const isSubmitting = ref(false)
 const doctorsList = ref<any[]>([])
 const selectedDoctorId = ref('')
 
-// Added TypeScript typing so your editor stops yelling about the nulls!
 const form = ref({
     first_name: '',
     middle_name: '',
@@ -143,12 +142,12 @@ onMounted(async () => {
 async function handleSubmit() {
   isSubmitting.value = true
   try {
-    // We now pass the specifically selected doctor from the dropdown!
+    // pass the specifically selected doctor from the dropdown
     await patientListings.addPatientAndLinkToDoctor(form.value, selectedDoctorId.value)
     
     alert("Patient successfully added and assigned to doctor!")
     
-    // Automatically send the admin back to the CRUD dashboard
+
     goBack()
     
   } catch (error) {

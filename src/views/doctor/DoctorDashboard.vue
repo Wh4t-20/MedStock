@@ -93,7 +93,7 @@ onMounted(async () => {
 })
 
 const store  = useLabStore()
-// Keeping your recent requests logic here in case you want to use it later!
+// Keeping the recent requests logic 
 const recent = computed(() => store.requestViews.slice(-5).reverse())
 
 function formatDate(d: string) {
