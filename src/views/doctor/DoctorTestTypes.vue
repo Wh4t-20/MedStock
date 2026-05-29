@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-5">
     <div class="flex items-center justify-between">
-      <div><h2 class="text-2xl font-bold text-gray-900">Test Types</h2><p class="text-gray-500 text-sm mt-0.5">Centralized laboratory test catalog</p></div>
+      <div><h2 class="text-2xl font-bold font-mono text-[#18265F]">Test Types</h2><p class="text-gray-500 text-sm mt-0.5">Centralized laboratory test catalog</p></div>
       <button @click="openCreate" class="btn-primary">+ Add Test Type</button>
     </div>
 
