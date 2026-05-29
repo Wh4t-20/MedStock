@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-2xl font-bold text-gray-900">Technician Dashboard</h2>
+      <h2 class="text-2xl font-mono font-bold text-[#18265F]">Technician Dashboard</h2>
       <p class="text-gray-500 text-sm mt-1">Test processing overview</p>
     </div>
 

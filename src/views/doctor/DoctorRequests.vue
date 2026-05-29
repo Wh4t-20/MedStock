@@ -2,7 +2,7 @@
   <div class="space-y-5">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Lab Requests</h2>
+        <h2 class="text-2xl font-bold font-mono text-[#18265F]">Lab Requests</h2>
         <p class="text-gray-500 text-sm mt-0.5">Manage and create laboratory test requests</p>
       </div>
       <button @click="showCreate = true" class="btn-primary">+ New Request</button>
@@ -10,16 +10,26 @@
 
     <!-- Filters -->
     <div class="flex flex-wrap gap-3">
-      <input v-model="search" placeholder="Search patient, doctor…" class="form-input max-w-xs" />
-      <select v-model="filterStatus" class="form-select w-40">
-        <option value="">All Statuses</option>
-        <option>Pending</option>
-        <option>In Progress</option>
-        <option>Completed</option>
-        <option>Cancelled</option>
-      </select>
-    </div>
+  <input
+    v-model="search"
+    placeholder="Search patient, doctor…"
+    class="form-input max-w-xs"
+  />
 
+  <!-- Styled Select -->
+  <div class="relative w-48">
+    <select 
+  v-model="filterStatus" 
+  class="w-44 px-3 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer transition-colors duration-150 ease-in-out focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+>
+  <option value="" class="text-gray-500">All Statuses</option>
+  <option value="Pending" class="text-amber-600 font-medium">Pending</option>
+  <option value="Processing" class="text-blue-600 font-medium">In Progress</option>
+  <option value="Completed" class="text-green-600 font-medium">Completed</option>
+  <option value="Cancelled" class="text-rose-600 font-medium">Cancelled</option>
+</select>
+</div>
+</div>
     <!-- Table -->
     <div class="card overflow-hidden">
       <div class="overflow-x-auto">
@@ -250,3 +260,4 @@ function formatDate(d: string) {
   return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 </script>
+

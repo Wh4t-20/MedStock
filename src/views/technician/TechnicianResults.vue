@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-5">
     <div>
-      <h2 class="text-2xl font-bold text-gray-900">All Test Results</h2>
+      <h2 class="text-2xl font-mono font-bold text-[#18265F]">All Test Results</h2>
       <p class="text-gray-500 text-sm mt-0.5">Recorded test results across all patients</p>
     </div>
 

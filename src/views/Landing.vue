@@ -121,7 +121,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted} from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/api/supabase'
 
@@ -133,7 +133,7 @@ const rememberMe   = ref(false)
 const errorMessage = ref('')
 const isLoading    = ref(false)
 
-// STEP 1: Send the Code
+//  Send the OTP code
 const sendOtp = async () => {
   errorMessage.value = ''
   isLoading.value    = true
@@ -160,6 +160,11 @@ const sendOtp = async () => {
   }
 }
 
+onMounted(async () => {
+  await supabase.auth.signOut()
+  
+})
+
 const verifyOtp = async () => {
   errorMessage.value = ''
   isLoading.value    = true
@@ -179,15 +184,17 @@ const verifyOtp = async () => {
     if (data.user) {
       const uid = data.user.id
 
-      const [{ data: doctor }, { data: patient }, { data: technician }] = await Promise.all([
+      const [{ data: doctor }, { data: patient }, { data: technician }, {data: admin}] = await Promise.all([
         supabase.from('Doctor').select('doctor_id').eq('user_id', uid).maybeSingle(),
-        supabase.from('Patient').select('patient_id').eq('user_id', uid).maybeSingle(),
+        supabase.from('Patient').select('patients_id').eq('user_id', uid).maybeSingle(),
         supabase.from('LabTechnician').select('technician_id').eq('user_id', uid).maybeSingle(),
+        supabase.from('Admin').select('admin_id').eq('user_id', uid).maybeSingle(),
       ])
 
       if (doctor)        router.push('/doctor/dashboard')
       else if (patient)  router.push('/patient/dashboard')
       else if (technician) router.push('/technician/dashboard')
+      else if (admin) router.push('/crud')
       else errorMessage.value = 'No role assigned to this account.'
     }
   } catch {
