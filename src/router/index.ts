@@ -31,13 +31,12 @@ import TechnicianDirectory from '@/views/technician/TechnicianDirectory.vue'
 
 import CrudPage   from '@/views/crudPage.vue'
 // Admin Portal
-import AddPatient from '@/views/admin/addPatient.vue'
-import ViewPatient from '@/views/admin/viewPatient.vue'
-//import AdminDoctorLayout from '@/views/admin/AdminDoctorLayout.vue'
-import DoctorsList from '@/views/admin/AdminDoctor.vue'
-import AdminDoctorLayout from '@/views/admin/AdminDoctorLayout.vue'
-import AdminDoctorDashboard from '@/views/admin/AdminDoctorDashboard.vue'
-import AddPatient from '@/views/adminPatient/addPatient.vue'
+//import AddPatient from '@/views/admin/addPatient.vue'
+//import ViewPatient from '@/views/adminPatient/viewPatient.vue'
+import DoctorsList from '@/views/adminDoctor/AdminDoctor.vue'
+import AdminDoctorLayout from '@/views/adminDoctor/AdminDoctorLayout.vue'
+import AdminDoctorDashboard from '@/views/adminDoctor/AdminDoctorDashboard.vue'
+
 // import ViewPatient from '@/views/admin/viewPatient.vue'
 import AdminPatientLayout from '@/views/adminPatient/adminPatientLayout.vue'
 import AdminPatientDashboard from '@/views/adminPatient/adminPatientDashboard.vue'
@@ -97,18 +96,18 @@ const router = createRouter({
       // meta: { requiresAuth: true },
       children: [
         { path: '',           redirect: '/admin-doctor/dashboard' },
-        { path: 'dashboard',  component: AdminDoctorDashboard,  name: 'admindoc-dashboard' },
-        { path: 'doctorslist',      component: DoctorsList,      name: 'admindoc-list'     },
-        { path: 'results',    component: TechnicianResults,    name: 'tech-results'   },
+        { path: 'dashboard',  component: AdminDoctorDashboard,  name: 'aDoctor-dashboard' },
+        { path: 'doctorslist',      component: DoctorsList,      name: 'aDoctor-list'     },
+        ]
+      },
     {
-      path: '/adminPatient',
+      path: '/admin-patient',
       component: AdminPatientLayout,
       meta: { requiresAuth: true },
       children: [
-        { path: '',           redirect: '/adminPatient/dashboard' },
+        { path: '',           redirect: '/admin-patient/dashboard' },
         { path: 'dashboard',  component: AdminPatientDashboard,  name: 'aPatient-dashboard' },
         { path: 'patients',    component: adminViewPatient,    name: 'aPatient-view'   },
-        { path: 'directory',  component: TechnicianDirectory,  name: 'tech-directory' },
       ]
     },
     { 
@@ -118,12 +117,12 @@ const router = createRouter({
       name: 'crud-home' 
     },
    
-    { 
-      path: '/adminPatient/addPatient',             
-      component: AddPatient,   
-      meta: { requiresAuth: true },
-      name: 'add-patient' 
-    },
+   // { 
+     // path: '/adminPatient/addPatient',             
+      //component: AddPatient,   
+      //meta: { requiresAuth: true },
+     // name: 'add-patient' 
+    //},
   ]
 })
 //basically protection para di maablihan gamit searchbar
