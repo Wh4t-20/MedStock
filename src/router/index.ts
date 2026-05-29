@@ -30,8 +30,11 @@ import { supabase } from '@/api/supabase'
 
 
 import CrudPage   from '@/views/crudPage.vue'
+// Admin Portal
 import AddPatient from '@/views/admin/addPatient.vue'
 import ViewPatient from '@/views/admin/viewPatient.vue'
+//import AdminLayout from '@/views/admin/Admin.vue'
+import DoctorsList from '@/views/admin/AdminDoctor.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -85,6 +88,7 @@ const router = createRouter({
       // meta: { requiresAuth: true },
       name: 'crud-home' 
     },
+   
     { 
       path: '/admin/add-patient',
       component: AddPatient,
@@ -96,7 +100,14 @@ const router = createRouter({
       component: ViewPatient,
       // meta: { requiresAuth: true },
       name: 'viewPatient'
-    }
+    },
+    {
+      path: '/admin/doctors',
+      component: DoctorsList,
+      // meta: { requiresAuth: true },
+      name: 'doctors-list'
+    },
+   
   ]
 })
 //basically protection para di maablihan gamit searchbar
