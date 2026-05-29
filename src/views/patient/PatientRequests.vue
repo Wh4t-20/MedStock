@@ -65,6 +65,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '@/api/supabase'
 import StatusBadge from '@/components/StatusBadge.vue'
+import { patientListings } from '@/services/patientListings' // Brought your service in!
 
 const requests     = ref<any[]>([])
 const filterStatus = ref('')
@@ -72,17 +73,17 @@ const loading      = ref(true)
 
 onMounted(async () => {
   try {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    loading.value = true
 
-    const { data: p } = await supabase
-      .from('Patient')
-      .select('patient_id')
-      .eq('user_id', user.id)
-      .maybeSingle()
+    // 1. Let your service handle finding who the logged-in patient is
+    const patient = await patientListings.getCurrentPatient()
+    
+    if (!patient) return
 
-    if (!p) return
+    // Account for your database column name (using the 's')
+    const pid = patient.patients_id || patient.patient_id
 
+    // 2. Fetch all their requests, joined with Doctor and Test Results
     const { data, error } = await supabase
       .from('LabRequest')
       .select(`
@@ -94,23 +95,31 @@ onMounted(async () => {
           LabTechnician(first_name, last_name)
         )
       `)
-      .eq('patient_id', p.patient_id)
+      .eq('patient_id', pid)
       .order('request_date', { ascending: false })
 
-    if (error) throw error
+    if (error) {
+      console.error("Supabase relation error:", error)
+      throw error
+    }
+    
     requests.value = data ?? []
+    
   } catch (e) {
-    console.error(e)
+    console.error("Could not load requests:", e)
   } finally {
     loading.value = false
   }
 })
 
+// Filter logic for your dropdown menu
 const filtered = computed(() =>
   requests.value.filter(r => !filterStatus.value || r.status === filterStatus.value)
 )
 
+// Date formatter
 function formatDate(d: string) {
+  if (!d) return '—'
   return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 </script>
