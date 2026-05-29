@@ -30,6 +30,13 @@ import TechnicianDirectory from '@/views/technician/TechnicianDirectory.vue'
 
 
 import CrudPage   from '@/views/crudPage.vue'
+// Admin Portal
+import AddPatient from '@/views/admin/addPatient.vue'
+import ViewPatient from '@/views/admin/viewPatient.vue'
+//import AdminDoctorLayout from '@/views/admin/AdminDoctorLayout.vue'
+import DoctorsList from '@/views/admin/AdminDoctor.vue'
+import AdminDoctorLayout from '@/views/admin/AdminDoctorLayout.vue'
+import AdminDoctorDashboard from '@/views/admin/AdminDoctorDashboard.vue'
 import AddPatient from '@/views/adminPatient/addPatient.vue'
 // import ViewPatient from '@/views/admin/viewPatient.vue'
 import AdminPatientLayout from '@/views/adminPatient/adminPatientLayout.vue'
@@ -83,6 +90,16 @@ const router = createRouter({
         { path: 'directory',  component: TechnicianDirectory,  name: 'tech-directory' },
       ]
     },
+
+    {
+      path: '/admin-doctor',
+      component: AdminDoctorLayout,
+      // meta: { requiresAuth: true },
+      children: [
+        { path: '',           redirect: '/admin-doctor/dashboard' },
+        { path: 'dashboard',  component: AdminDoctorDashboard,  name: 'admindoc-dashboard' },
+        { path: 'doctorslist',      component: DoctorsList,      name: 'admindoc-list'     },
+        { path: 'results',    component: TechnicianResults,    name: 'tech-results'   },
     {
       path: '/adminPatient',
       component: AdminPatientLayout,
@@ -100,6 +117,7 @@ const router = createRouter({
       // meta: { requiresAuth: true },
       name: 'crud-home' 
     },
+   
     { 
       path: '/adminPatient/addPatient',             
       component: AddPatient,   
