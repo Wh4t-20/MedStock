@@ -1,12 +1,11 @@
 <template>
   <div class="space-y-5">
     <div class="flex items-center justify-between">
-      <div>
-        <h2 class="text-2xl font-bold font-mono text-[#18265F]">Patients</h2>
-        <p class="text-gray-500 text-sm mt-0.5">List of all registered Patients</p>
-      </div>
+      <div><h2 class="text-2xl font-bold font-mono text-[#18265F]">Patients</h2><p class="text-gray-500 text-sm mt-0.5">Licensed Physician Directory</p></div>
+        <button @click="showAddModal=true" class="btn-primary">+ Add Patient</button>
+     
     </div>
-
+    <input v-model="search" placeholder="Search by name, email, speacialization…" class="form-input max-w-sm" />
     <div v-if="isLoadingProfile" class="text-center py-10 text-gray-500 font-medium">Loading patients...</div>
     <div v-else-if="Patients.length === 0" class="text-center py-10 text-gray-500 font-medium">No patients found.</div>
 
@@ -19,8 +18,8 @@
         </div>
         
         <h3 class="font-semibold text-gray-900">{{ p.first_name }} {{ p.last_name }}</h3>
-        <p class="text-sm text-primary-600 font-medium mt-0.5">Born: {{ p.birth_date }} • Sex: {{ p.sex }}</p>
-        
+        <p class="text-sm text-primary-600 font-medium mt-0.5">Born: {{ p.birth_date }} </p>
+        <p class="text-sm text-primary-600 font-medium mt-0.5">Sex: {{ p.sex }}</p>
         <div class="mt-3 space-y-1 text-sm text-gray-500">
           <p>📧 {{ p.email || 'No email' }}</p>
           <p>📞 {{ p.contact_number || 'No contact' }}</p>
@@ -82,6 +81,176 @@
 
       </form>
     </Modal>
+    <Modal
+  :modelValue="showAddModal"
+  @update:modelValue="showAddModal = $event"
+  title="Add New Patient"
+>
+  <form @submit.prevent="submitAddPatient" class="space-y-4">
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div>
+        <label class="block text-sm font-bold text-gray-700 mb-1">
+          First Name
+        </label>
+        <input
+          v-model="addForm.first_name"
+          required
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-bold text-gray-700 mb-1">
+          Middle Name
+        </label>
+        <input
+          v-model="addForm.middle_name"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-bold text-gray-700 mb-1">
+          Last Name
+        </label>
+        <input
+          v-model="addForm.last_name"
+          required
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div>
+        <label class="block text-sm font-bold text-gray-700 mb-1">
+          Birth Date
+        </label>
+        <input
+          type="date"
+          v-model="addForm.birth_date"
+          required
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-bold text-gray-700 mb-1">
+          Sex
+        </label>
+        <select
+          v-model="addForm.sex"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        >
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+          <option value="O">Other</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div>
+        <label class="block text-sm font-bold text-gray-700 mb-1">
+          Email
+        </label>
+        <input
+          type="email"
+          v-model="addForm.email"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-bold text-gray-700 mb-1">
+          Contact Number
+        </label>
+        <input
+          v-model="addForm.contact_number"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        />
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-bold text-gray-700 mb-1">
+        Address
+      </label>
+      <input
+        v-model="addForm.address"
+        class="w-full border border-gray-300 rounded-md px-3 py-2"
+      />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div>
+        <label class="block text-sm font-bold text-gray-700 mb-1">
+          Weight (kg)
+        </label>
+        <input
+          type="number"
+          step="0.01"
+          v-model="addForm.weight"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-bold text-gray-700 mb-1">
+          Height (cm)
+        </label>
+        <input
+          type="number"
+          step="0.01"
+          v-model="addForm.height"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        />
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-bold text-gray-700 mb-1">
+        Assign Doctor
+      </label>
+
+      <select
+        v-model="selectedDoctorId"
+        required
+        class="w-full border border-gray-300 rounded-md px-3 py-2"
+      >
+        <option value="">Select Doctor</option>
+
+        <option
+          v-for="doc in doctorsList"
+          :key="doc.doctor_id"
+          :value="doc.doctor_id"
+        >
+          Dr. {{ doc.first_name }} {{ doc.last_name }}
+          - {{ doc.specialization }}
+        </option>
+      </select>
+    </div>
+
+    <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+      <button
+        type="button"
+        @click="showAddModal = false"
+        class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="submit"
+        :disabled="isSubmitting"
+        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md disabled:opacity-50"
+      >
+        {{ isSubmitting ? 'Saving...' : 'Save Patient' }}
+      </button>
+    </div>
+  </form>
+</Modal>
   </div>
 </template>
 
@@ -90,8 +259,8 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { patientListings } from '@/services/patientListings'
 import Modal from '@/components/Modal.vue'
+import { doctorListings } from '@/services/doctorListings'
 
-const router = useRouter()
 const isLoadingProfile = ref(true)
 const isSaving = ref(false)
 const Patients = ref<any[]>([])
@@ -108,7 +277,24 @@ const form = ref({
   email: '',
   contact_number: ''
 })
+const showAddModal = ref(false)
+const isSubmitting = ref(false)
+const search = ref('')
+const doctorsList = ref<any[]>([])
+const selectedDoctorId = ref('')
 
+const addForm = ref({
+  first_name: '',
+  middle_name: '',
+  last_name: '',
+  birth_date: '',
+  sex: 'O',
+  address: '',
+  weight: null as number | null,
+  height: null as number | null,
+  email: '',
+  contact_number: ''
+})
 // Extract the fetch logic so we can call it after updating/deleting to refresh the screen
 const fetchPatients = async () => {
   try {
@@ -124,10 +310,16 @@ const fetchPatients = async () => {
   }
 }
 
-onMounted(() => {
-  fetchPatients()
-})
+onMounted(async () => {
+  await fetchPatients()
 
+  try {
+    const doctors = await doctorListings.getAllDoctors()
+    doctorsList.value = doctors || []
+  } catch (error) {
+    console.error('Could not load doctors:', error)
+  }
+})
 
 const openEdit = (patient: any) => {
   currentEditId.value = patient.patients_id
@@ -159,6 +351,41 @@ const submit = async () => {
     alert("Failed to update patient. Check console for details.")
   } finally {
     isSaving.value = false
+  }
+}
+const submitAddPatient = async () => {
+  try {
+    isSubmitting.value = true
+
+    await patientListings.addPatientAndLinkToDoctor(
+      addForm.value,
+      selectedDoctorId.value
+    )
+
+    showAddModal.value = false
+
+    addForm.value = {
+      first_name: '',
+      middle_name: '',
+      last_name: '',
+      birth_date: '',
+      sex: 'O',
+      address: '',
+      weight: null,
+      height: null,
+      email: '',
+      contact_number: ''
+    }
+
+    selectedDoctorId.value = ''
+
+    await fetchPatients()
+
+  } catch (error) {
+    console.error(error)
+    alert('Failed to add patient')
+  } finally {
+    isSubmitting.value = false
   }
 }
 
