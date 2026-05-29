@@ -26,7 +26,7 @@ import TechnicianDirectory from '@/views/technician/TechnicianDirectory.vue'
 
 // supabase stuffs 
 
-// import { supabase } from '@/api/supabase'
+import { supabase } from '@/api/supabase'
 
 
 import CrudPage   from '@/views/crudPage.vue'
