@@ -64,11 +64,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import {  ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useLabStore } from '@/stores/lab'
 import StatCard    from '@/components/StatCard.vue'
-import StatusBadge from '@/components/StatusBadge.vue'
+
 import { doctorListings } from '@/services/doctorListings' 
 import { patientListings } from '@/services/patientListings'
 
@@ -93,10 +93,5 @@ onMounted(async () => {
 })
 
 const store  = useLabStore()
-// Keeping the recent requests logic 
-const recent = computed(() => store.requestViews.slice(-5).reverse())
 
-function formatDate(d: string) {
-  return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
 </script>
