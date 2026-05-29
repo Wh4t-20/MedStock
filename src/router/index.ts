@@ -31,6 +31,7 @@ import { supabase } from '@/api/supabase'
 
 import CrudPage   from '@/views/crudPage.vue'
 import AddPatient from '@/views/admin/addPatient.vue'
+import ViewPatient from '@/views/admin/viewPatient.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -41,7 +42,7 @@ const router = createRouter({
     {
       path: '/doctor',
       component: DoctorLayout,
-      meta: { requiresAuth: true },
+      // meta: { requiresAuth: true },
       children: [
         { path: '',          redirect: '/doctor/dashboard' },
         { path: 'dashboard', component: DoctorDashboard,  name: 'doctor-dashboard' },
@@ -56,7 +57,7 @@ const router = createRouter({
     {
       path: '/patient',
       component: PatientLayout,
-      meta: { requiresAuth: true },
+      // meta: { requiresAuth: true },
       children: [
         { path: '',           redirect: '/patient/dashboard' },
         { path: 'dashboard',  component: PatientDashboard,  name: 'patient-dashboard' },
@@ -69,7 +70,7 @@ const router = createRouter({
     {
       path: '/technician',
       component: TechnicianLayout,
-      meta: { requiresAuth: true },
+      // meta: { requiresAuth: true },
       children: [
         { path: '',           redirect: '/technician/dashboard' },
         { path: 'dashboard',  component: TechnicianDashboard,  name: 'tech-dashboard' },
@@ -81,62 +82,68 @@ const router = createRouter({
     { 
       path: '/crud',             
       component: CrudPage,   
-      meta: { requiresAuth: true },
+      // meta: { requiresAuth: true },
       name: 'crud-home' 
     },
     { 
       path: '/admin/add-patient',
       component: AddPatient,
-      meta: { requiresAuth: true },
+      // meta: { requiresAuth: true },
       name: 'add-patient' 
+    },
+    {
+      path: '/admin/viewPatient',
+      component: ViewPatient,
+      // meta: { requiresAuth: true },
+      name: 'viewPatient'
     }
   ]
 })
 //basically protection para di maablihan gamit searchbar
-router.beforeEach(async (to, _from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+// router.beforeEach(async (to, _from, next) => {
+//   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
 
-  if (!requiresAuth) {
-    next()
-    return
-  }
+//   if (!requiresAuth) {
+//     next()
+//     return
+//   }
 
-  const { data: { session } } = await supabase.auth.getSession()
+//   const { data: { session } } = await supabase.auth.getSession()
 
-  if (!session) {
-    next('/')
-  } else {
-    next()
-  }
-})
+//   if (!session) {
+//     next('/')
+//   } else {
+//     next()
+//   }
+// })
 
 // Basically checks if you have permission from supabase based on you role
-router.beforeEach(async (to, _from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+// router.beforeEach(async (to, _from, next) => {
+//   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   
-  if (requiresAuth) {
-    const { data: { session } } = await supabase.auth.getSession()
+//   if (requiresAuth) {
+//     const { data: { session } } = await supabase.auth.getSession()
     
-    if (!session) {
-      return next('/')
-    }
+//     if (!session) {
+//       return next('/')
+//     }
 
-    const requiredRole = to.meta.role
-    const userRole = sessionStorage.getItem('userRole')
+//     const requiredRole = to.meta.role
+//     const userRole = sessionStorage.getItem('userRole')
 
-    if (requiredRole && userRole !== requiredRole) {
-      console.warn(`Access Denied: ${userRole} attempted to access ${requiredRole} route.`)
+//     if (requiredRole && userRole !== requiredRole) {
+//       console.warn(`Access Denied: ${userRole} attempted to access ${requiredRole} route.`)
       
-      if (userRole === 'admin') return next('/crud')
-      if (userRole === 'patient') return next('/patient')
-      if (userRole === 'doctor') return next('/doctor')
-      if (userRole === 'technician') return next('/technician')
+//       if (userRole === 'admin') return next('/crud')
+//       if (userRole === 'patient') return next('/patient')
+//       if (userRole === 'doctor') return next('/doctor')
+//       if (userRole === 'technician') return next('/technician')
       
-      return next('/')
-    }
-  }
+//       return next('/')
+//     }
+//   }
 
-  next()
-})
+//   next()
+// })
 
 export default router
