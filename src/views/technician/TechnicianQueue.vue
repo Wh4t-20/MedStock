@@ -5,7 +5,9 @@
       <p class="text-gray-500 text-sm mt-0.5">Process pending and in-progress lab requests</p>
     </div>
 
-    <div class="space-y-4">
+    <div v-if="loading" class="card p-12 text-center text-gray-400">Loading queue...</div>
+
+    <div v-else class="space-y-4">
       <div v-for="req in queue" :key="req.request_id" class="card p-5">
         <div class="flex items-start justify-between mb-4">
           <div>
@@ -13,35 +15,37 @@
               <span class="font-mono text-primary-700 font-bold text-sm">{{ req.request_id }}</span>
               <StatusBadge :status="req.status" />
             </div>
-            <p class="font-semibold text-gray-900">{{ req.patient.first_name }} {{ req.patient.last_name }}</p>
-            <p class="text-sm text-gray-500">Dr. {{ req.doctor.first_name }} {{ req.doctor.last_name }} · {{ formatDate(req.request_date) }}</p>
+            <p class="font-semibold text-gray-900">{{ req.Patient?.first_name }} {{ req.Patient?.last_name }}</p>
+            <p class="text-sm text-gray-500">Dr. {{ req.Doctor?.first_name }} {{ req.Doctor?.last_name }} · {{ formatDate(req.request_date) }}</p>
           </div>
           <div class="flex gap-2">
-            <button v-if="req.status === 'Pending'" @click="markInProgress(req.request_id)" class="btn-accent text-xs">Start Processing</button>
-            <button v-if="req.status === 'In Progress'" @click="markComplete(req.request_id)" class="btn-primary text-xs bg-green-600 hover:bg-green-700">Mark Complete</button>
+            <button v-if="req.status === 'Pending'"     @click="markInProgress(req.request_id)" class="btn-accent text-xs">Start Processing</button>
+            <button v-if="req.status === 'In Progress'" @click="markComplete(req.request_id)"   class="btn-primary text-xs bg-green-600 hover:bg-green-700">Mark Complete</button>
           </div>
         </div>
 
-        <!-- Tests with result entry -->
+        <!-- Existing results -->
         <div class="space-y-3">
-          <div v-for="detail in req.details" :key="detail.detail_id"
-            class="p-4 rounded-xl border"
-            :class="getResult(req, detail.detail_id) ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'">
-            <div class="flex items-center justify-between mb-2">
+          <div v-for="result in req.TestResult" :key="result.result_id"
+            class="p-4 rounded-xl border border-green-200 bg-green-50">
+            <div class="flex items-center justify-between mb-1">
               <div>
-                <span class="font-semibold text-gray-800">{{ detail.test_type.test_name }}</span>
-                <span class="ml-2 text-xs text-gray-400">{{ detail.test_type.category }}</span>
+                <span class="font-semibold text-gray-800">{{ result.TestType?.test_name }}</span>
+                <span class="ml-2 text-xs text-gray-400">{{ result.TestType?.category }}</span>
               </div>
-              <span v-if="getResult(req, detail.detail_id)" class="badge-completed">Done</span>
-              <button v-else @click="openResultForm(req, detail)" class="btn-primary text-xs py-1">Enter Result</button>
+              <span class="badge-completed">Done</span>
             </div>
-            <p class="text-xs text-gray-500">Normal: {{ detail.test_type.normal_range }}</p>
-            <div v-if="getResult(req, detail.detail_id) as any" class="mt-2 text-sm">
-              <p class="text-gray-700 font-medium">{{ (getResult(req, detail.detail_id) as any).result_value }}</p>
-              <p class="text-gray-500 text-xs">{{ (getResult(req, detail.detail_id) as any).remarks }}</p>
-            </div>
+            <p class="text-xs text-gray-500 mb-1">Normal: {{ result.TestType?.normal_range }}</p>
+            <p class="text-sm font-medium text-gray-700">{{ result.result_value }}</p>
+            <p v-if="result.remarks" class="text-xs text-gray-500 mt-0.5">{{ result.remarks }}</p>
+          </div>
+
+          <div v-if="!req.TestResult?.length" class="p-4 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-400">
+            No results entered yet.
           </div>
         </div>
+
+        <button @click="openResultForm(req)" class="btn-primary text-xs mt-3">+ Add Result</button>
       </div>
 
       <div v-if="!queue.length" class="card p-16 text-center text-gray-400">
@@ -53,15 +57,20 @@
     <!-- Enter Result Modal -->
     <Modal v-model="showResultModal" title="Enter Test Result">
       <form @submit.prevent="submitResult" class="space-y-4">
-        <div class="p-3 bg-primary-50 rounded-xl text-sm">
-          <p class="font-semibold text-primary-800">{{ currentDetail?.test_type.test_name }}</p>
-          <p class="text-primary-600 text-xs mt-1">Normal: {{ currentDetail?.test_type.normal_range }}</p>
+        <div>
+          <label class="form-label">Test Type</label>
+          <select v-model="resultForm.test_type_id" required class="form-select">
+            <option value="" disabled>Select test type…</option>
+            <option v-for="tt in testTypes" :key="tt.test_type_id" :value="tt.test_type_id">
+              {{ tt.test_name }} — {{ tt.category }}
+            </option>
+          </select>
         </div>
         <div>
           <label class="form-label">Assigned Technician</label>
           <select v-model="resultForm.technician_id" required class="form-select">
             <option value="" disabled>Select technician…</option>
-            <option v-for="t in store.technicians" :key="t.technician_id" :value="t.technician_id">
+            <option v-for="t in technicians" :key="t.technician_id" :value="t.technician_id">
               {{ t.first_name }} {{ t.last_name }}
             </option>
           </select>
@@ -76,7 +85,9 @@
         </div>
         <div class="flex justify-end gap-3 pt-2">
           <button type="button" @click="showResultModal = false" class="btn-secondary">Cancel</button>
-          <button type="submit" class="btn-primary">Save Result</button>
+          <button type="submit" :disabled="submitting" class="btn-primary">
+            {{ submitting ? 'Saving…' : 'Save Result' }}
+          </button>
         </div>
       </form>
     </Modal>
@@ -84,48 +95,92 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive } from 'vue'
-import { useLabStore } from '@/stores/lab'
-import type { LabRequestView, RequestDetail, TestType } from '@/types'
+import { ref, reactive, onMounted } from 'vue'
+import { supabase } from '@/api/supabase'
 import StatusBadge from '@/components/StatusBadge.vue'
 import Modal       from '@/components/Modal.vue'
 
-const store = useLabStore()
+const queue       = ref<any[]>([])
+const testTypes   = ref<any[]>([])
+const technicians = ref<any[]>([])
+const loading     = ref(true)
+const submitting  = ref(false)
+
 const showResultModal = ref(false)
-const currentReq    = ref<LabRequestView | null>(null)
-const currentDetail = ref<(RequestDetail & { test_type: TestType }) | null>(null)
+const currentReq      = ref<any>(null)
+const resultForm      = reactive({
+  test_type_id: '', technician_id: '', result_value: '', remarks: ''
+})
 
-const resultForm = reactive({ technician_id: '', result_value: '', remarks: '' })
-
-const queue = computed(() =>
-  store.requestViews.filter(r => r.status === 'Pending' || r.status === 'In Progress')
-)
-
-function getResult(req: LabRequestView, detailId: string) {
-  return req.results.find(r => r.detail_id === detailId) ?? null
+async function fetchQueue() {
+  const { data } = await supabase
+    .from('LabRequest')
+    .select(`
+      *,
+      Patient(first_name, last_name),
+      Doctor(first_name, last_name),
+      TestResult(*, TestType(test_name, category, normal_range))
+    `)
+    .in('status', ['Pending', 'In Progress'])
+    .order('request_date', { ascending: true })
+  queue.value = data ?? []
 }
 
-function markInProgress(id: string) { store.updateLabRequest(id, { status: 'In Progress' }) }
-function markComplete(id: string)   { store.updateLabRequest(id, { status: 'Completed'   }) }
+onMounted(async () => {
+  try {
+    const [, { data: tt }, { data: techs }] = await Promise.all([
+      fetchQueue(),
+      supabase.from('TestType').select('*'),
+      supabase.from('LabTechnician').select('technician_id, first_name, last_name')
+    ])
+    testTypes.value   = tt   ?? []
+    technicians.value = techs ?? []
+  } catch (e) {
+    console.error(e)
+  } finally {
+    loading.value = false
+  }
+})
 
-function openResultForm(req: LabRequestView, detail: RequestDetail & { test_type: TestType }) {
-  currentReq.value    = req
-  currentDetail.value = detail
-  Object.assign(resultForm, { technician_id: '', result_value: '', remarks: '' })
+async function markInProgress(id: number) {
+  await supabase.from('LabRequest').update({ status: 'In Progress' }).eq('request_id', id)
+  await fetchQueue()
+}
+
+async function markComplete(id: number) {
+  await supabase.from('LabRequest').update({ status: 'Completed' }).eq('request_id', id)
+  await fetchQueue()
+}
+
+function openResultForm(req: any) {
+  currentReq.value = req
+  Object.assign(resultForm, { test_type_id: '', technician_id: '', result_value: '', remarks: '' })
   showResultModal.value = true
 }
 
-function submitResult() {
-  if (!currentDetail.value) return
-  store.addTestResult({
-    detail_id:      currentDetail.value.detail_id,
-    technician_id:  resultForm.technician_id,
-    result_value:   resultForm.result_value,
-    remarks:        resultForm.remarks,
-    result_date:    new Date().toISOString()
-  })
-  showResultModal.value = false
+async function submitResult() {
+  if (!currentReq.value) return
+  submitting.value = true
+  try {
+    const { error } = await supabase.from('TestResult').insert({
+      request_id:    currentReq.value.request_id,
+      test_type_id:  resultForm.test_type_id,
+      technician_id: resultForm.technician_id,
+      result_value:  resultForm.result_value,
+      remarks:       resultForm.remarks,
+      result_date:   new Date().toISOString().split('T')[0]
+    })
+    if (error) throw error
+    showResultModal.value = false
+    await fetchQueue()
+  } catch (e) {
+    console.error(e)
+  } finally {
+    submitting.value = false
+  }
 }
 
-function formatDate(d: string) { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }
+function formatDate(d: string) {
+  return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
 </script>
