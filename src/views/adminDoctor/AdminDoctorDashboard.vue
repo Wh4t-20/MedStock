@@ -89,6 +89,5 @@
     }
   })
   
-  const store  = useLabStore()
   
   </script>
