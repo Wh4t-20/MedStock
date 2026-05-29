@@ -1,6 +1,20 @@
 <template>
   <div class="space-y-6">
     <div>
+      <h2 class="text-2xl font-bold text-gray-900">Patient Overview</h2>
+      <!-- 1. Updated to use currentPatient -->
+      <p class="text-gray-500 text-sm mt-1">Lab request summary of {{ currentPatient?.first_name || 'Loading...' }}</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-7">
+      <StatCard icon="📋" label="Total Requests"   :value="store.stats.totalRequests"       iconBg="bg-blue-100" />
+      <StatCard icon="⏳" label="Pending"           :value="store.stats.pendingRequests"     iconBg="bg-amber-100" />
+      <StatCard icon="✅" label="Completed"         :value="store.stats.completedRequests"   iconBg="bg-green-100" />
+    </div>
+
+    <div class="card overflow-hidden">
+      <div class="p-5 border-b border-gray-100">
+        <h3 class="font-semibold text-gray-900">My Profile Summary</h3>
       <span v-if="loading" class="text-gray-500 font-medium">Loading...</span>
       <span v-else-if="patient" class="font-bold text-lg text-primary-700">
         Welcome, {{ patient.first_name }} {{ patient.last_name }}
@@ -61,6 +75,28 @@
             </tr>
           </thead>
           <tbody>
+            <!-- 2. Removed v-for loop, replaced with v-if checking for currentPatient -->
+            <tr v-if="currentPatient" class="border-b border-gray-50 hover:bg-gray-50">
+              <td class="table-cell">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-accent-100 flex items-center justify-center text-accent-700 font-bold text-sm">
+                    {{ currentPatient.first_name?.[0] }}{{ currentPatient.last_name?.[0] }}
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-900">{{ currentPatient.first_name }} {{ currentPatient.last_name }}</p>
+                    <p class="text-xs text-gray-400">{{ currentPatient.patients_id }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="table-cell text-gray-500">{{ currentPatient.birth_date }}</td>
+              <td class="table-cell text-gray-500">{{ currentPatient.contact_number }}</td>
+              <td class="table-cell">
+                <!-- Ensure we pass patients_id to the function -->
+                <span class="font-semibold text-primary-700">{{ requestCount(currentPatient.patients_id) }}</span>
+              </td>
+              <td class="table-cell">
+                <StatusBadge v-if="latestStatus(currentPatient.patients_id)" :status="latestStatus(currentPatient.patients_id)!" />
+                <span v-else class="text-gray-400 text-xs">—</span>
             <tr v-for="req in requests.slice(0, 5)" :key="req.request_id"
               class="border-b border-gray-50 hover:bg-blue-50 transition-colors">
               <td class="p-4 font-mono text-primary-700 font-medium text-sm">{{ req.request_id }}</td>
@@ -69,6 +105,11 @@
                 {{ req.TestResult?.map((r: any) => r.TestType?.test_name).filter(Boolean).join(', ') || '—' }}
               </td>
               <td class="p-4"><StatusBadge :status="req.status" /></td>
+            </tr>
+            
+            <!-- Added a loading state for the table -->
+            <tr v-else-if="isLoadingProfile">
+              <td colspan="5" class="text-center py-6 text-gray-500">Loading patient data...</td>
             </tr>
           </tbody>
         </table>
@@ -83,11 +124,55 @@ import { RouterLink } from 'vue-router'
 import { supabase } from '@/api/supabase'
 import StatCard    from '@/components/StatCard.vue'
 import StatusBadge from '@/components/StatusBadge.vue'
+import { patientListings } from '@/services/patientListings'
+import { computed, ref, onMounted } from 'vue'
 
 const patient  = ref<any>(null)
 const requests = ref<any[]>([])
 const loading  = ref(true)
 
+const currentPatient = ref<any>(null)
+const isLoadingProfile = ref(true)
+
+onMounted(async () => {
+  try {
+    isLoadingProfile.value = true
+    
+    // 1. Check if the profile is already saved in the browser's temporary memory
+    const cachedProfile = sessionStorage.getItem('patientProfile')
+    
+    if (cachedProfile) {
+      // 2. If yes, load it instantly from memory. NO database fetch!
+      currentPatient.value = JSON.parse(cachedProfile)
+      console.log("Loaded from Cache! (No database hit):", currentPatient.value)
+    } else {
+      // 3. If no, fetch it from Supabase...
+      const fetchedPatient = await patientListings.getCurrentPatient()
+      currentPatient.value = fetchedPatient
+      
+      // ...and save it to memory so it doesn't fetch again when you switch tabs!
+      sessionStorage.setItem('patientProfile', JSON.stringify(fetchedPatient))
+      console.log("My Fetched Profile (From Database):", currentPatient.value)
+    }
+  } 
+  catch (error) {
+    console.error("Could not load patient profile:", error)
+  } finally {
+    isLoadingProfile.value = false
+  }
+})
+
+// Note: Ensure your store.labRequests uses 'patients_id' or 'patient_id' consistently!
+function requestCount(pid: string) {
+  if (!pid) return 0
+  return store.labRequests.filter(r => r.patients_id === pid || r.patient_id === pid).length
+}
+
+function latestStatus(pid: string) {
+  if (!pid) return null
+  const reqs = store.labRequests.filter(r => r.patients_id === pid || r.patient_id === pid)
+  if (!reqs.length) return null
+  return reqs[reqs.length - 1].status
 onMounted(async () => {
   try {
     const { data: { user } } = await supabase.auth.getUser()
