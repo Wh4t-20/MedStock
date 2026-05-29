@@ -26,12 +26,16 @@ import TechnicianDirectory from '@/views/technician/TechnicianDirectory.vue'
 
 // supabase stuffs 
 
-import { supabase } from '@/api/supabase'
+// import { supabase } from '@/api/supabase'
 
 
 import CrudPage   from '@/views/crudPage.vue'
-import AddPatient from '@/views/admin/addPatient.vue'
-import ViewPatient from '@/views/admin/viewPatient.vue'
+import AddPatient from '@/views/adminPatient/addPatient.vue'
+// import ViewPatient from '@/views/admin/viewPatient.vue'
+import AdminPatientLayout from '@/views/adminPatient/adminPatientLayout.vue'
+import AdminPatientDashboard from '@/views/adminPatient/adminPatientDashboard.vue'
+import adminViewPatient from '@/views/adminPatient/adminViewPatient.vue'
+
 
 const router = createRouter({
   history: createWebHistory(),
@@ -79,6 +83,17 @@ const router = createRouter({
         { path: 'directory',  component: TechnicianDirectory,  name: 'tech-directory' },
       ]
     },
+    {
+      path: '/adminPatient',
+      component: AdminPatientLayout,
+      meta: { requiresAuth: true },
+      children: [
+        { path: '',           redirect: '/adminPatient/dashboard' },
+        { path: 'dashboard',  component: AdminPatientDashboard,  name: 'aPatient-dashboard' },
+        { path: 'patients',    component: adminViewPatient,    name: 'aPatient-view'   },
+        { path: 'directory',  component: TechnicianDirectory,  name: 'tech-directory' },
+      ]
+    },
     { 
       path: '/crud',             
       component: CrudPage,   
@@ -86,17 +101,11 @@ const router = createRouter({
       name: 'crud-home' 
     },
     { 
-      path: '/admin/add-patient',
-      component: AddPatient,
-      // meta: { requiresAuth: true },
+      path: '/adminPatient/addPatient',             
+      component: AddPatient,   
+      meta: { requiresAuth: true },
       name: 'add-patient' 
     },
-    {
-      path: '/admin/viewPatient',
-      component: ViewPatient,
-      // meta: { requiresAuth: true },
-      name: 'viewPatient'
-    }
   ]
 })
 //basically protection para di maablihan gamit searchbar
