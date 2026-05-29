@@ -2,33 +2,16 @@
   <div class="space-y-5">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-2xl font-bold font-mono text-[#18265F]">Doctors</h2>
-        <p class="text-gray-500 text-sm mt-0.5">Licensed Physician Directory</p>
+        <h2 class="text-2xl font-bold font-mono text-[#18265F]">Technicians</h2>
+        <p class="text-gray-500 text-sm mt-0.5">Licensed Technicians Directory</p>
       </div>
-      <input v-model="search" placeholder="Search by name, email, speacialization…" class="form-input max-w-sm" />
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div v-for="d in store.doctors":key="d.doctor_id" class="card p-5">
-          <div class="flex items-start justify-between mb-3">
-            <div class="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center text-2xl">🩺</div>
-            <span class="font-mono text-xs text-primary-600 bg-primary-50 px-2 py-1 rounded-lg">{{ d.doctor_id }}</span>
-          </div>
-          <h3 class="font-semibold text-gray-900">Dr. {{ d.first_name }} {{ d.last_name }}</h3>
-          <p class="text-sm text-primary-600 font-medium mt-0.5">{{ d.specialization }}</p>
-          <div class="mt-3 space-y-1 text-sm text-gray-500">
-            <p>📧 {{ d.email }}</p>
-            <p>📞 {{ d.contact_number }}</p>
-          </div>
-          <div class="flex gap-2 mt-4 pt-3 border-t border-gray-100">
-            <button @click="openEdit(d)" class="btn-secondary text-xs px-3 py-1.5">Edit</button>
-            <button @click="del(d.doctor_id)" class="btn-danger text-xs px-3 py-1.5">Delete</button>
-          </div>
-      <button @click="openCreate" class="btn-primary">+ Add Doctor</button>
+      <button @click="openCreate" class="btn-primary">+ Add Technician</button>
     </div>
     
     <input v-model="search" placeholder="Search by name, email, specialization…" class="form-input max-w-sm w-full border border-gray-300 rounded-md px-3 py-2" />
     
-    <div v-if="isLoading" class="text-center py-12 text-gray-500 font-medium">Loading doctors...</div>
-    <div v-else-if="filteredDoctors.length === 0" class="text-center py-12 text-gray-500 font-medium">No doctors match your search.</div>
+    <div v-if="isLoading" class="text-center py-12 text-gray-500 font-medium">Loading technicians...</div>
+    <div v-else-if="filteredDoctors.length === 0" class="text-center py-12 text-gray-500 font-medium">No technicians match your search.</div>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div v-for="d in filteredDoctors" :key="d.doctor_id" class="card p-5 bg-white shadow-sm border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
@@ -53,7 +36,7 @@
       </div>
     </div>
 
-    <Modal :modelValue="showModal" @update:modelValue="showModal = $event" :title="editMode ? 'Edit Doctor' : 'Add Doctor'">
+    <Modal :modelValue="showModal" @update:modelValue="showModal = $event" :title="editMode ? 'Edit Technician' : 'Add Technician'">
       <form @submit.prevent="submit" class="space-y-4">
         
         <div class="grid grid-cols-3 gap-3">
@@ -70,7 +53,7 @@
         <div class="flex justify-end gap-3 pt-4 mt-2 border-t border-gray-100">
           <button type="button" @click="showModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">Cancel</button>
           <button type="submit" :disabled="isSaving" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-md transition-colors">
-            {{ isSaving ? 'Saving...' : (editMode ? 'Save' : 'Add Doctor') }}
+            {{ isSaving ? 'Saving...' : (editMode ? 'Save' : 'Add Technician') }}
           </button>
         </div>
       </form>

@@ -38,7 +38,6 @@
             <tr class="border-b border-gray-100">
               <th class="table-head">ID</th>
               <th class="table-head">Patient</th>
-              <th class="table-head">Doctor</th>
               <th class="table-head">Date</th>
               <th class="table-head">Tests</th>
               <th class="table-head">Notes</th>
@@ -50,7 +49,6 @@
             <tr v-for="req in filtered" :key="req.request_id" class="border-b border-gray-50 hover:bg-gray-50">
               <td class="table-cell font-mono text-primary-700 font-semibold">{{ req.request_id }}</td>
               <td class="table-cell">{{ req.patient.first_name }} {{ req.patient.last_name }}</td>
-              <td class="table-cell">Dr. {{ req.doctor.first_name }} {{ req.doctor.last_name }}</td>
               <td class="table-cell">{{ formatDate(req.request_date) }}</td>
               <td class="table-cell">
                 <div class="flex flex-wrap gap-1">

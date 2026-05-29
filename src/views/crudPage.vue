@@ -12,7 +12,7 @@
       </p>
 
       <!-- Portal cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-5xl">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
         <RouterLink to="/admin-doctor" class="portal-card group">
           <div class="portal-icon bg-blue-100 group-hover:bg-blue-200">🩺</div>
           <h2 class="text-lg font-bold text-gray-900 mt-3">Doctor Portal</h2>
@@ -34,7 +34,7 @@
           <p class="text-sm text-gray-500 mt-1">View all Profiles of the Patients</p>
           <div class="mt-4 btn-primary text-sm justify-center bg-pink-500 hover:bg-pink-600 border-0">Enter Portal →</div>
         </RouterLink>
-      </div> 
+      </div>
       <div class="w-full max-w-md mx-4 z-10">
       <!-- Logo / Brand -->
        <div class="text-center mb-8">
