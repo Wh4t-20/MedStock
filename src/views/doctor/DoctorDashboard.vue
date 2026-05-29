@@ -3,7 +3,7 @@
     
     <div>
       <span v-if="isLoadingProfile" class="text-gray-500 font-medium">Loading pa bai...</span>
-      <span v-else-if="currentDoctor" class="font-bold text-lg text-primary-700">
+      <span v-else-if="currentDoctor" class="font-bold font-mono text-lg text-primary-700">
         Welcome, Dr. {{ currentDoctor.last_name }} the GOAT 🔥🔥🔥
       </span>
       <h2 class="text-2xl font-mono font-bold text-[#18265F] mt-2">Dashboard</h2>
