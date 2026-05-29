@@ -33,8 +33,10 @@ import CrudPage   from '@/views/crudPage.vue'
 // Admin Portal
 import AddPatient from '@/views/admin/addPatient.vue'
 import ViewPatient from '@/views/admin/viewPatient.vue'
-//import AdminLayout from '@/views/admin/Admin.vue'
+//import AdminDoctorLayout from '@/views/admin/AdminDoctorLayout.vue'
 import DoctorsList from '@/views/admin/AdminDoctor.vue'
+import AdminDoctorLayout from '@/views/admin/AdminDoctorLayout.vue'
+import AdminDoctorDashboard from '@/views/admin/AdminDoctorDashboard.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -78,6 +80,19 @@ const router = createRouter({
         { path: '',           redirect: '/technician/dashboard' },
         { path: 'dashboard',  component: TechnicianDashboard,  name: 'tech-dashboard' },
         { path: 'queue',      component: TechnicianQueue,      name: 'tech-queue'     },
+        { path: 'results',    component: TechnicianResults,    name: 'tech-results'   },
+        { path: 'directory',  component: TechnicianDirectory,  name: 'tech-directory' },
+      ]
+    },
+
+    {
+      path: '/admin-doctor',
+      component: AdminDoctorLayout,
+      // meta: { requiresAuth: true },
+      children: [
+        { path: '',           redirect: '/admin-doctor/dashboard' },
+        { path: 'dashboard',  component: AdminDoctorDashboard,  name: 'admindoc-dashboard' },
+        { path: 'doctorslist',      component: DoctorsList,      name: 'admindoc-list'     },
         { path: 'results',    component: TechnicianResults,    name: 'tech-results'   },
         { path: 'directory',  component: TechnicianDirectory,  name: 'tech-directory' },
       ]

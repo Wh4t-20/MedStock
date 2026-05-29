@@ -44,10 +44,8 @@
   
         <!-- Navigation -->
         <nav class="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-1">
-          <NavItem to="/doctor/dashboard"  :icon="LayoutDashboard" label="Dashboard" />
-          <NavItem to="/doctor/requests"   :icon="ClipboardList" label="Lab Requests" />
-          <NavItem to="/doctor/patients"   :icon="Users" label="Patients" />
-          <NavItem to="/doctor/doctors"    :icon="UserRound" label="Doctors" />
+          <NavItem to="/admin-doctor/dashboard"  :icon="LayoutDashboard" label="Dashboard" />
+          <NavItem to="/admin-doctor/doctorslist"    :icon="UserRound" label="Doctors" />
           <NavItem to="/doctor/test-types" :icon="FlaskConical" label="Test Types" />
         </nav>
   
