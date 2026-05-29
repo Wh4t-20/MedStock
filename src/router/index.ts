@@ -26,7 +26,7 @@ import TechnicianDirectory from '@/views/technician/TechnicianDirectory.vue'
 
 // supabase stuffs 
 
-import { supabase } from '@/api/supabase'
+// import { supabase } from '@/api/supabase'
 
 
 import CrudPage   from '@/views/crudPage.vue'
@@ -37,6 +37,12 @@ import ViewPatient from '@/views/admin/viewPatient.vue'
 import DoctorsList from '@/views/admin/AdminDoctor.vue'
 import AdminDoctorLayout from '@/views/admin/AdminDoctorLayout.vue'
 import AdminDoctorDashboard from '@/views/admin/AdminDoctorDashboard.vue'
+import AddPatient from '@/views/adminPatient/addPatient.vue'
+// import ViewPatient from '@/views/admin/viewPatient.vue'
+import AdminPatientLayout from '@/views/adminPatient/adminPatientLayout.vue'
+import AdminPatientDashboard from '@/views/adminPatient/adminPatientDashboard.vue'
+import adminViewPatient from '@/views/adminPatient/adminViewPatient.vue'
+
 
 const router = createRouter({
   history: createWebHistory(),
@@ -94,6 +100,14 @@ const router = createRouter({
         { path: 'dashboard',  component: AdminDoctorDashboard,  name: 'admindoc-dashboard' },
         { path: 'doctorslist',      component: DoctorsList,      name: 'admindoc-list'     },
         { path: 'results',    component: TechnicianResults,    name: 'tech-results'   },
+    {
+      path: '/adminPatient',
+      component: AdminPatientLayout,
+      meta: { requiresAuth: true },
+      children: [
+        { path: '',           redirect: '/adminPatient/dashboard' },
+        { path: 'dashboard',  component: AdminPatientDashboard,  name: 'aPatient-dashboard' },
+        { path: 'patients',    component: adminViewPatient,    name: 'aPatient-view'   },
         { path: 'directory',  component: TechnicianDirectory,  name: 'tech-directory' },
       ]
     },
@@ -105,24 +119,11 @@ const router = createRouter({
     },
    
     { 
-      path: '/admin/add-patient',
-      component: AddPatient,
-      // meta: { requiresAuth: true },
+      path: '/adminPatient/addPatient',             
+      component: AddPatient,   
+      meta: { requiresAuth: true },
       name: 'add-patient' 
     },
-    {
-      path: '/admin/viewPatient',
-      component: ViewPatient,
-      // meta: { requiresAuth: true },
-      name: 'viewPatient'
-    },
-    {
-      path: '/admin/doctors',
-      component: DoctorsList,
-      // meta: { requiresAuth: true },
-      name: 'doctors-list'
-    },
-   
   ]
 })
 //basically protection para di maablihan gamit searchbar
