@@ -31,7 +31,7 @@ import { supabase } from '@/api/supabase'
 
 import CrudPage   from '@/views/crudPage.vue'
 // Admin Portal
-//import AddPatient from '@/views/admin/addPatient.vue'
+import AddPatient from '@/views/adminPatient/addPatient.vue'
 //import ViewPatient from '@/views/adminPatient/viewPatient.vue'
 import DoctorsList from '@/views/adminDoctor/AdminDoctor.vue'
 import AdminDoctorLayout from '@/views/adminDoctor/AdminDoctorLayout.vue'
@@ -114,6 +114,7 @@ const router = createRouter({
         { path: '',           redirect: '/admin-patient/dashboard' },
         { path: 'dashboard',  component: AdminPatientDashboard,  name: 'aPatient-dashboard' },
         { path: 'patients',    component: adminViewPatient,    name: 'aPatient-view'   },
+        { path: 'directory',  component: TechnicianDirectory,  name: 'tech-directory' },
       ]
     },
     {
@@ -134,12 +135,12 @@ const router = createRouter({
       name: 'crud-home' 
     },
    
-   // { 
-     // path: '/adminPatient/addPatient',             
-      //component: AddPatient,   
+   { 
+     path: '/admin-patient/addPatient',             
+      component: AddPatient,   
       //meta: { requiresAuth: true },
-     // name: 'add-patient' 
-    //},
+      name: 'add-patient' 
+    },
   ]
 })
 //basically protection para di maablihan gamit searchbar
