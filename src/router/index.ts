@@ -26,6 +26,9 @@ import TechnicianDirectory from '@/views/technician/TechnicianDirectory.vue'
 
 import CrudPage   from '@/views/crudPage.vue'
 import AddPatient from '@/views/admin/addPatient.vue'
+import { supabase } from '@/api/supabase'
+
+
 
 const router = createRouter({
   history: createWebHistory(),
@@ -81,6 +84,35 @@ const router = createRouter({
       name: 'add-patient' 
     }
   ]
+})
+
+// Basically checks if you have permission from supabase based on you role
+router.beforeEach(async (to, _from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  
+  if (requiresAuth) {
+    const { data: { session } } = await supabase.auth.getSession()
+    
+    if (!session) {
+      return next('/')
+    }
+
+    const requiredRole = to.meta.role
+    const userRole = sessionStorage.getItem('userRole')
+
+    if (requiredRole && userRole !== requiredRole) {
+      console.warn(`Access Denied: ${userRole} attempted to access ${requiredRole} route.`)
+      
+      if (userRole === 'admin') return next('/crud')
+      if (userRole === 'patient') return next('/patient')
+      if (userRole === 'doctor') return next('/doctor')
+      if (userRole === 'technician') return next('/technician')
+      
+      return next('/')
+    }
+  }
+
+  next()
 })
 
 export default router

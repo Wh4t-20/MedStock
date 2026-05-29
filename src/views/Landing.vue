@@ -142,7 +142,7 @@ const sendOtp = async () => {
     const { error } = await supabase.auth.signInWithOtp({
       email: email.value,
       options: {
-        // 🟢 FIX 1: Must be true so our VIP Database Trigger can run!
+        // be true so our VIP Database Trigger can run!
         shouldCreateUser: true 
       }
     })
