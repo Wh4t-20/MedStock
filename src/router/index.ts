@@ -24,8 +24,13 @@ import TechnicianQueue     from '@/views/technician/TechnicianQueue.vue'
 import TechnicianResults   from '@/views/technician/TechnicianResults.vue'
 import TechnicianDirectory from '@/views/technician/TechnicianDirectory.vue'
 
+// supabase stuffs 
+
+import { supabase } from '@/api/supabase'
+
+
 import CrudPage   from '@/views/crudPage.vue'
-import AddPatient from '@/views/CRUD/addPatient.vue'
+import AddPatient from '@/views/admin/addPatient.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -36,6 +41,7 @@ const router = createRouter({
     {
       path: '/doctor',
       component: DoctorLayout,
+      meta: { requiresAuth: true },
       children: [
         { path: '',          redirect: '/doctor/dashboard' },
         { path: 'dashboard', component: DoctorDashboard,  name: 'doctor-dashboard' },
@@ -50,6 +56,7 @@ const router = createRouter({
     {
       path: '/patient',
       component: PatientLayout,
+      meta: { requiresAuth: true },
       children: [
         { path: '',           redirect: '/patient/dashboard' },
         { path: 'dashboard',  component: PatientDashboard,  name: 'patient-dashboard' },
@@ -62,6 +69,7 @@ const router = createRouter({
     {
       path: '/technician',
       component: TechnicianLayout,
+      meta: { requiresAuth: true },
       children: [
         { path: '',           redirect: '/technician/dashboard' },
         { path: 'dashboard',  component: TechnicianDashboard,  name: 'tech-dashboard' },
@@ -73,14 +81,33 @@ const router = createRouter({
     { 
       path: '/crud',             
       component: CrudPage,   
+      meta: { requiresAuth: true },
       name: 'crud-home' 
     },
     { 
-      path: '/crud/add-patient', 
-      component: AddPatient, 
+      path: '/admin/add-patient',
+      component: AddPatient,
+      meta: { requiresAuth: true },
       name: 'add-patient' 
     }
   ]
+})
+//basically protection para di maablihan gamit searchbar
+router.beforeEach(async (to, _from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+
+  if (!requiresAuth) {
+    next()
+    return
+  }
+
+  const { data: { session } } = await supabase.auth.getSession()
+
+  if (!session) {
+    next('/')
+  } else {
+    next()
+  }
 })
 
 export default router
