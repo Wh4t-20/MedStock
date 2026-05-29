@@ -20,12 +20,6 @@
           <div class="mt-4 btn-primary text-sm justify-center">Enter Portal →</div>
         </RouterLink>
 
-        <RouterLink to="/admin/add-patient" class="portal-card group">
-          <div class="portal-icon bg-yellow-100 group-hover:bg-yellow-200">🧑‍⚕️</div>
-          <h2 class="text-lg font-bold text-gray-900 mt-3">Patient Add</h2>
-          <p class="text-sm text-gray-500 mt-1">TEST ONLY</p>
-          <div class="mt-4 btn-accent text-sm justify-center">Enter Portal →</div>
-        </RouterLink>
 
         <RouterLink to="/technician" class="portal-card group">
           <div class="portal-icon bg-green-100 group-hover:bg-green-200">🔬</div>
@@ -34,7 +28,7 @@
           <div class="mt-4 btn-secondary text-sm justify-center border-primary-600 text-primary-700 hover:bg-primary-50">Enter Portal →</div>
         </RouterLink>
 
-        <RouterLink to="/admin/viewPatient" class="portal-card group">
+        <RouterLink to="/adminPatient" class="portal-card group">
           <div class="portal-icon bg-pink-100 group-hover:bg-pink-200">🧑‍⚕️</div>
           <h2 class="text-lg font-bold text-gray-900 mt-3">Patient Portal</h2>
           <p class="text-sm text-gray-500 mt-1">View all Profiles of the Patients</p>

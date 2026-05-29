@@ -15,7 +15,7 @@ export const patientListings = {
     const { data, error } = await supabase
       .from('Patient')
       .select('*')
-      .eq('patient_id', patientId)
+      .eq('patients_id', patientId) // FIXED: Added 's'
       .single()
 
     if (error) throw error
@@ -32,7 +32,6 @@ export const patientListings = {
         .eq('"LabRequest".doctor_id', doctorId) 
 
       if (error) throw error
-
       return data
     },
 
@@ -50,7 +49,7 @@ export const patientListings = {
     const { data, error } = await supabase
       .from('Patient')
       .update(updates)
-      .eq('patient_id', patientId)
+      .eq('patients_id', patientId) // FIXED: Added 's'
       .select()
 
     if (error) throw error
@@ -61,7 +60,7 @@ export const patientListings = {
     const { error } = await supabase
       .from('Patient')
       .delete()
-      .eq('patient_id', patientId)
+      .eq('patients_id', patientId) // FIXED: Added 's'
 
     if (error) throw error
     return true
@@ -93,7 +92,7 @@ export const patientListings = {
 
     if (patientError) throw patientError
 
-    //Insert the Contact Number (if naa)
+    //Insert the Contact Number 
     if (patientData.contact_number) {
       const { error: contactError } = await supabase
         .from('PatientContactNumber')
@@ -107,6 +106,7 @@ export const patientListings = {
       if (contactError) throw contactError
     }
 
+    // Create Dummy Lab Request to link them
     const { error: linkError } = await supabase
       .from('LabRequest')
       .insert([
@@ -123,6 +123,7 @@ export const patientListings = {
 
     return newPatient
   },
+  
   async getCurrentPatient() {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) throw new Error('Not authenticated')
