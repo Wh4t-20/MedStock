@@ -1,9 +1,12 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 flex flex-col">
+  <!--<div class="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 flex flex-col"> -->
+    <div class="min-h-screen bg-center  flex flex-col" style="background-image: url('../LabPic.png')">
     <header class="flex items-center justify-between px-8 py-6">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-accent-400 rounded-xl flex items-center justify-center font-bold text-primary-900 text-xl">M</div>
-        <span class="text-white text-xl font-bold tracking-tight">MedLab<span class="text-accent-400">System</span></span>
+        <div class="w-10 h-10 bg-accent-400 rounded-xl flex items-center justify-center font-bold text-primary-900 text-xl">
+          <Activity class="w-6 h-6 text-primary-900 shrink-0" />
+        </div>
+        <span class="text-white text-xl font-bold tracking-tight">Med<span class="text-accent-400">Stock</span></span>
       </div>
       <span class="text-primary-300 text-sm">Medical Laboratory Management</span>
     </header>
@@ -124,6 +127,9 @@
 import { ref, onMounted} from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/api/supabase'
+import {
+  Activity
+} from 'lucide-vue-next'
 
 const router       = useRouter()
 const email        = ref('')
