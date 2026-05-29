@@ -96,8 +96,9 @@ const router = createRouter({
       // meta: { requiresAuth: true },
       children: [
         { path: '',           redirect: '/admin-doctor/dashboard' },
-        { path: 'dashboard',  component: AdminDoctorDashboard,  name: 'aDoctor-dashboard' },
-        { path: 'doctorslist',      component: DoctorsList,      name: 'aDoctor-list'     },
+        { path: 'dashboard',  component: AdminDoctorDashboard,  name: 'admindoc-dashboard' },
+        { path: 'doctorslist',      component: DoctorsList,      name: 'admindoc-list'     },
+        { path: 'results',    component: TechnicianResults,    name: 'tech-results'   },
         ]
       },
     {
@@ -108,6 +109,7 @@ const router = createRouter({
         { path: '',           redirect: '/admin-patient/dashboard' },
         { path: 'dashboard',  component: AdminPatientDashboard,  name: 'aPatient-dashboard' },
         { path: 'patients',    component: adminViewPatient,    name: 'aPatient-view'   },
+        { path: 'directory',  component: TechnicianDirectory,  name: 'tech-directory' },
       ]
     },
     { 
