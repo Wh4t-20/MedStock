@@ -24,6 +24,9 @@ import TechnicianQueue     from '@/views/technician/TechnicianQueue.vue'
 import TechnicianResults   from '@/views/technician/TechnicianResults.vue'
 import TechnicianDirectory from '@/views/technician/TechnicianDirectory.vue'
 
+import CrudPage   from '@/views/crudPage.vue'
+import AddPatient from '@/views/CRUD/addPatient.vue'
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -67,6 +70,16 @@ const router = createRouter({
         { path: 'directory',  component: TechnicianDirectory,  name: 'tech-directory' },
       ]
     },
+    { 
+      path: '/crud',             
+      component: CrudPage,   
+      name: 'crud-home' 
+    },
+    { 
+      path: '/crud/add-patient', 
+      component: AddPatient, 
+      name: 'add-patient' 
+    }
   ]
 })
 
