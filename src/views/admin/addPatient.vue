@@ -80,7 +80,7 @@
         <div class="mt-6 p-5 bg-blue-50 rounded-lg border border-blue-100">
           <label class="block text-sm font-bold text-blue-900 mb-2">Assign to Doctor:</label>
           <select v-model="selectedDoctorId" required class="w-full border border-blue-300 rounded-md px-3 py-2">
-            <option value="" disabled>Select a doctor...</option>
+            <option value="" disabled>Select a doctor</option>
             <option v-for="doc in doctorsList" :key="doc.doctor_id" :value="doc.doctor_id">
               Dr. {{ doc.first_name }} {{ doc.last_name }} - {{ doc.specialization }}
             </option>
@@ -113,7 +113,6 @@ const isSubmitting = ref(false)
 const doctorsList = ref<any[]>([])
 const selectedDoctorId = ref('')
 
-// Added TypeScript typing so your editor stops yelling about the nulls!
 const form = ref({
     first_name: '',
     middle_name: '',
@@ -143,12 +142,12 @@ onMounted(async () => {
 async function handleSubmit() {
   isSubmitting.value = true
   try {
-    // We now pass the specifically selected doctor from the dropdown!
+    // pass the specifically selected doctor from the dropdown
     await patientListings.addPatientAndLinkToDoctor(form.value, selectedDoctorId.value)
     
     alert("Patient successfully added and assigned to doctor!")
     
-    // Automatically send the admin back to the CRUD dashboard
+
     goBack()
     
   } catch (error) {

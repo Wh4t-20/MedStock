@@ -25,7 +25,7 @@ import TechnicianResults   from '@/views/technician/TechnicianResults.vue'
 import TechnicianDirectory from '@/views/technician/TechnicianDirectory.vue'
 
 import CrudPage   from '@/views/crudPage.vue'
-import AddPatient from '@/views/CRUD/addPatient.vue'
+import AddPatient from '@/views/admin/addPatient.vue'
 
 const router = createRouter({
   history: createWebHistory(),
