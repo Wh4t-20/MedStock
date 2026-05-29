@@ -24,6 +24,7 @@
           </div>
       <button @click="openCreate" class="btn-primary">+ Add Doctor</button>
     </div>
+    </div>
     
     <input v-model="search" placeholder="Search by name, email, specialization…" class="form-input max-w-sm w-full border border-gray-300 rounded-md px-3 py-2" />
     
@@ -75,6 +76,7 @@
         </div>
       </form>
     </Modal>
+  </div>
   </div>
 </template>
 
