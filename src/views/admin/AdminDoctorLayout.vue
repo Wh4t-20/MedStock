@@ -46,7 +46,7 @@
         <nav class="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-1">
           <NavItem to="/admin-doctor/dashboard"  :icon="LayoutDashboard" label="Dashboard" />
           <NavItem to="/admin-doctor/doctorslist"    :icon="UserRound" label="Doctors" />
-          <NavItem to="/doctor/test-types" :icon="FlaskConical" label="Test Types" />
+          
         </nav>
   
         <!-- Footer -->
@@ -56,15 +56,11 @@
             class="flex items-center gap-3 px-3 py-2
                    rounded-xl bg-white/5 min-w-[180px]"
           >
-            <div
-              class="w-8 h-8 rounded-full
-                     bg-[#F5A623] text-[#1A1F3A]
-                     flex items-center justify-center
-                     text-xs font-bold font-mono shrink-0"
-            >
-              LF
-            </div>
-  
+          <UserRoundCog
+            class="w-8 h-8 rounded-full
+            bg-[#F5A623] text-[#1A1F3A]
+            p-1 shrink-0"
+          />
             <div
               class="flex-1 min-w-0 opacity-0
                      group-hover/sidebar:opacity-100
@@ -72,11 +68,11 @@
                      whitespace-nowrap"
             >
               <p class="text-xs font-semibold text-white truncate">
-                LUISA FERNANDEZ
+                ADMIN
               </p>
   
               <p class="text-[10px] text-white/40 truncate">
-                dr.aquino@clinic.com
+                Doctor
               </p>
             </div>
           </div>
@@ -112,7 +108,7 @@
                  px-6 flex items-center justify-between"
         >
           <h1 class="text-lg font-semibold text-[#18265F]">
-            Doctor's Portal
+            Admin's Portal
           </h1>
   
           <div class="flex items-center gap-3">
@@ -120,24 +116,14 @@
               class="flex items-center gap-2.5
                      p-1.5 pr-3"
             >
-              <div
-                class="w-8 h-8 rounded-full
-                       bg-[#1A1F3A] text-[#F5A623]
-                       flex items-center justify-center
-                       text-xs font-bold font-mono"
-              >
-                LF
-              </div>
+            <UserRoundCog
+            class="w-8 h-8 rounded-full
+            bg-[#1A1F3A] text-[#F5A623]
+            p-1 shrink-0"
+/>
+              
   
-              <div class="hidden sm:block">
-                <p class="text-xs font-semibold text-gray-800">
-                  Dr. Luisa Fernandez
-                </p>
-  
-                <p class="text-[10px] text-gray-400 font-medium">
-                  Physician
-                </p>
-              </div>
+              
             </button>
           </div>
         </header>
@@ -158,10 +144,8 @@
   import {
     Activity,
     LayoutDashboard,
-    ClipboardList,
-    Users,
     UserRound,
-    FlaskConical,
-    ArrowLeft
+    ArrowLeft,
+    UserRoundCog
   } from 'lucide-vue-next'
   </script>

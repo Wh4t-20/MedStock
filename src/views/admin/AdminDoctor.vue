@@ -1,10 +1,10 @@
 <template>
     <div class="space-y-5">
       <div class="flex items-center justify-between">
-        <div><h2 class="text-2xl font-bold font-mono text-[#18265F]">Doctors</h2><p class="text-gray-500 text-sm mt-0.5">Licensed physician directory</p></div>
+        <div><h2 class="text-2xl font-bold font-mono text-[#18265F]">Doctors</h2><p class="text-gray-500 text-sm mt-0.5">Licensed Physician Directory</p></div>
         <button @click="openCreate" class="btn-primary">+ Add Doctor</button>
       </div>
-  
+      <input v-model="search" placeholder="Search by name, email, speacialization…" class="form-input max-w-sm" />
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div v-for="d in store.doctors" :key="d.doctor_id" class="card p-5">
           <div class="flex items-start justify-between mb-3">
@@ -49,7 +49,7 @@
   import { useLabStore } from '@/stores/lab'
   import type { Doctor } from '@/types'
   import Modal from '@/components/Modal.vue'
-  
+  const search = ref('')
   const store = useLabStore()
   const showModal = ref(false); const editMode = ref(false); const editId = ref('')
   const blank = (): Omit<Doctor,'doctor_id'> => ({ first_name:'', last_name:'', email:'', contact_number:'', specialization:'' })
