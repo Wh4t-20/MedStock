@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-5">
     <div>
-      <h2 class="text-2xl font-bold text-gray-900">Test Queue</h2>
+      <h2 class="text-2xl font-mono font-bold text-[#18265F]">Test Queue</h2>
       <p class="text-gray-500 text-sm mt-0.5">Process pending and in-progress lab requests</p>
     </div>
 

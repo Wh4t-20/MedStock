@@ -6,7 +6,7 @@
       <span v-else-if="currentDoctor" class="font-bold text-lg text-primary-700">
         Welcome, Dr. {{ currentDoctor.last_name }} the GOAT 🔥🔥🔥
       </span>
-      <h2 class="text-2xl font-bold text-gray-900 mt-2">Dashboard</h2>
+      <h2 class="text-2xl font-mono font-bold text-[#18265F] mt-2">Dashboard</h2>
       <p class="text-gray-500 text-sm mt-1">Overview of all laboratory activity</p>
     </div>
 
@@ -19,7 +19,7 @@
 
     <div class="card overflow-hidden bg-white shadow-sm rounded-xl border border-gray-100">
       <div class="flex items-center justify-between p-5 border-b border-gray-100">
-        <h3 class="font-semibold text-gray-900">My Patients</h3>
+        <h3 class="font-semibold font-inter text-[#18265F]">My Patients</h3>
         <RouterLink to="/doctor/patients" class="text-sm text-primary-600 hover:text-primary-800 font-medium">
           View all →
         </RouterLink>
