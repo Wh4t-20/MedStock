@@ -2,16 +2,16 @@
   <div class="space-y-5">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-2xl font-bold font-mono text-[#18265F]">Doctors</h2>
-        <p class="text-gray-500 text-sm mt-0.5">Licensed Physician Directory</p>
+        <h2 class="text-2xl font-bold font-mono text-[#18265F]">Technicians</h2>
+        <p class="text-gray-500 text-sm mt-0.5">Licensed Technicians Directory</p>
       </div>
-      <button @click="openCreate" class="btn-primary">+ Add Doctor</button>
+      <button @click="openCreate" class="btn-primary">+ Add Technician</button>
     </div>
     
     <input v-model="search" placeholder="Search by name, email, specialization…" class="form-input max-w-sm w-full border border-gray-300 rounded-md px-3 py-2" />
     
-    <div v-if="isLoading" class="text-center py-12 text-gray-500 font-medium">Loading doctors...</div>
-    <div v-else-if="filteredDoctors.length === 0" class="text-center py-12 text-gray-500 font-medium">No doctors match your search.</div>
+    <div v-if="isLoading" class="text-center py-12 text-gray-500 font-medium">Loading technicians...</div>
+    <div v-else-if="filteredDoctors.length === 0" class="text-center py-12 text-gray-500 font-medium">No technicians match your search.</div>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div v-for="d in filteredDoctors" :key="d.doctor_id" class="card p-5 bg-white shadow-sm border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <Modal :modelValue="showModal" @update:modelValue="showModal = $event" :title="editMode ? 'Edit Doctor' : 'Add Doctor'">
+    <Modal :modelValue="showModal" @update:modelValue="showModal = $event" :title="editMode ? 'Edit Technician' : 'Add Technician'">
       <form @submit.prevent="submit" class="space-y-4">
         
         <div class="grid grid-cols-3 gap-3">
@@ -53,7 +53,7 @@
         <div class="flex justify-end gap-3 pt-4 mt-2 border-t border-gray-100">
           <button type="button" @click="showModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">Cancel</button>
           <button type="submit" :disabled="isSaving" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-md transition-colors">
-            {{ isSaving ? 'Saving...' : (editMode ? 'Save' : 'Add Doctor') }}
+            {{ isSaving ? 'Saving...' : (editMode ? 'Save' : 'Add Technician') }}
           </button>
         </div>
       </form>

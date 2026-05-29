@@ -42,6 +42,12 @@ import AdminPatientLayout from '@/views/adminPatient/adminPatientLayout.vue'
 import AdminPatientDashboard from '@/views/adminPatient/adminPatientDashboard.vue'
 import adminViewPatient from '@/views/adminPatient/adminViewPatient.vue'
 
+//admin Technician
+import TechnicianList from '@/views/adminTechnician/adminTechnician.vue'
+import AdminTechnicianLayout from '@/views/adminTechnician/adminTechnicianLayout.vue'
+import AdminTechnicianDashboard from '@/views/adminTechnician/adminTechnicianDashboard.vue'
+import AdminTechnicianTestType from '@/views/adminTechnician/adminTechnicianTestType.vue'
+
 
 const router = createRouter({
   history: createWebHistory(),
@@ -97,17 +103,28 @@ const router = createRouter({
       children: [
         { path: '',           redirect: '/admin-doctor/dashboard' },
         { path: 'dashboard',  component: AdminDoctorDashboard,  name: 'aDoctor-dashboard' },
-        { path: 'doctorslist',      component: DoctorsList,      name: 'aDoctor-list'     },
+        { path: 'doctors',      component: DoctorsList,      name: 'aDoctor-list'     },
         ]
       },
     {
       path: '/admin-patient',
       component: AdminPatientLayout,
-      meta: { requiresAuth: true },
+      // meta: { requiresAuth: true },
       children: [
         { path: '',           redirect: '/admin-patient/dashboard' },
         { path: 'dashboard',  component: AdminPatientDashboard,  name: 'aPatient-dashboard' },
         { path: 'patients',    component: adminViewPatient,    name: 'aPatient-view'   },
+      ]
+    },
+    {
+      path: '/admin-technician',
+      component: AdminTechnicianLayout,
+      // meta: { requiresAuth: true },
+      children: [
+        { path: '',           redirect: '/admin-technician/dashboard' },
+        { path: 'dashboard',  component: AdminTechnicianDashboard,  name: 'aTechnician-dashboard' },
+        { path: 'technicians',    component: TechnicianList,    name: 'aTechnician-view'   },
+        { path: 'testype', component: AdminTechnicianTestType, name: 'aTechnician-testtype'}
       ]
     },
     { 
@@ -143,33 +160,33 @@ const router = createRouter({
 //   }
 // })
 
-// Basically checks if you have permission from supabase based on you role
-// router.beforeEach(async (to, _from, next) => {
-//   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+//Basically checks if you have permission from supabase based on you role
+router.beforeEach(async (to, _from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   
-//   if (requiresAuth) {
-//     const { data: { session } } = await supabase.auth.getSession()
+  if (requiresAuth) {
+    const { data: { session } } = await supabase.auth.getSession()
     
-//     if (!session) {
-//       return next('/')
-//     }
+    if (!session) {
+      return next('/')
+    }
 
-//     const requiredRole = to.meta.role
-//     const userRole = sessionStorage.getItem('userRole')
+    const requiredRole = to.meta.role
+    const userRole = sessionStorage.getItem('userRole')
 
-//     if (requiredRole && userRole !== requiredRole) {
-//       console.warn(`Access Denied: ${userRole} attempted to access ${requiredRole} route.`)
+    if (requiredRole && userRole !== requiredRole) {
+      console.warn(`Access Denied: ${userRole} attempted to access ${requiredRole} route.`)
       
-//       if (userRole === 'admin') return next('/crud')
-//       if (userRole === 'patient') return next('/patient')
-//       if (userRole === 'doctor') return next('/doctor')
-//       if (userRole === 'technician') return next('/technician')
+      if (userRole === 'admin') return next('/crud')
+      if (userRole === 'patient') return next('/patient')
+      if (userRole === 'doctor') return next('/doctor')
+      if (userRole === 'technician') return next('/technician')
       
-//       return next('/')
-//     }
-//   }
+      return next('/')
+    }
+  }
 
-//   next()
-// })
+  next()
+})
 
 export default router

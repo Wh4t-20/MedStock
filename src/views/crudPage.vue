@@ -12,8 +12,8 @@
       </p>
 
       <!-- Portal cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-5xl">
-        <RouterLink to="/doctor" class="portal-card group">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
+        <RouterLink to="/admin-doctor" class="portal-card group">
           <div class="portal-icon bg-blue-100 group-hover:bg-blue-200">🩺</div>
           <h2 class="text-lg font-bold text-gray-900 mt-3">Doctor Portal</h2>
           <p class="text-sm text-gray-500 mt-1">View all Profiles of our beloved Lab Technicians</p>
@@ -21,20 +21,20 @@
         </RouterLink>
 
 
-        <RouterLink to="/technician" class="portal-card group">
+        <RouterLink to="/admin-technician" class="portal-card group">
           <div class="portal-icon bg-green-100 group-hover:bg-green-200">🔬</div>
           <h2 class="text-lg font-bold text-gray-900 mt-3">Technician Portal</h2>
           <p class="text-sm text-gray-500 mt-1">Process test queue, enter results, manage assignments</p>
           <div class="mt-4 btn-secondary text-sm justify-center border-primary-600 text-primary-700 hover:bg-primary-50">Enter Portal →</div>
         </RouterLink>
 
-        <RouterLink to="/adminPatient" class="portal-card group">
+        <RouterLink to="/admin-patient" class="portal-card group">
           <div class="portal-icon bg-pink-100 group-hover:bg-pink-200">🧑‍⚕️</div>
           <h2 class="text-lg font-bold text-gray-900 mt-3">Patient Portal</h2>
           <p class="text-sm text-gray-500 mt-1">View all Profiles of the Patients</p>
           <div class="mt-4 btn-primary text-sm justify-center bg-pink-500 hover:bg-pink-600 border-0">Enter Portal →</div>
         </RouterLink>
-      </div> -->
+      </div>
       <div class="w-full max-w-md mx-4 z-10">
       <!-- Logo / Brand -->
        <div class="text-center mb-8">

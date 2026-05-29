@@ -3,11 +3,11 @@
     
     <div>
       <h2 class="text-2xl font-mono font-bold text-[#18265F] mt-2">Dashboard</h2>
-      <p class="text-gray-500 text-sm mt-1">Overview of all Doctors in this Clinic</p>
+      <p class="text-gray-500 text-sm mt-1">Overview of all Technicians in this Clinic</p>
     </div>
     
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      <StatCard icon="⚕️" label="Total Doctors"    :value="Doctors.length"          iconBg="bg-blue-100" />
+      <StatCard icon="⚕️" label="Total Technicians"    :value="Doctors.length"          iconBg="bg-blue-100" />
     </div>
 
     <div class="card overflow-hidden bg-white shadow-sm rounded-xl border border-gray-100">
@@ -22,7 +22,7 @@
         <table class="w-full text-left">
           <thead>
             <tr class="border-b border-gray-100 bg-gray-50 text-sm text-gray-500">
-              <th class="p-4 font-semibold">Doctor ID</th>
+              <th class="p-4 font-semibold">Technician ID</th>
               <th class="p-4 font-semibold">First Name</th>
               <th class="p-4 font-semibold">Middle Initial</th>
               <th class="p-4 font-semibold">Last Name</th>
@@ -33,11 +33,11 @@
           <tbody>
             
             <tr v-if="isLoadingProfile">
-              <td colspan="6" class="p-8 text-center text-gray-400 font-medium">Loading doctors...</td>
+              <td colspan="6" class="p-8 text-center text-gray-400 font-medium">Loading technicians...</td>
             </tr>
             
             <tr v-else-if="Doctors.length === 0">
-              <td colspan="6" class="p-8 text-center text-gray-400 font-medium">No Doctors found in the database.</td>
+              <td colspan="6" class="p-8 text-center text-gray-400 font-medium">No Technicians found in the database.</td>
             </tr>
 
             <tr v-else v-for="doctor in Doctors" :key="doctor.doctor_id" class="border-b border-gray-50 hover:bg-blue-50 transition-colors">

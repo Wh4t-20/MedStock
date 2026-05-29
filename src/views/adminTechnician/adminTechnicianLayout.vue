@@ -44,9 +44,9 @@
   
         <!-- Navigation -->
         <nav class="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-1">
-          <NavItem to="/admin-doctor/dashboard"  :icon="LayoutDashboard" label="Dashboard" />
-          <NavItem to="/admin-doctor/doctors"    :icon="UserRound" label="Doctors" />
-          
+          <NavItem to="/admin-technician/dashboard"  :icon="LayoutDashboard" label="Dashboard" />
+          <NavItem to="/admin-technician/technicians"    :icon="UserRound" label="Technicians" />
+          <NavItem to="/admin-technician/testype"    :icon="FlaskConical" label="Test Type" />
         </nav>
   
         <!-- Footer -->
@@ -146,6 +146,7 @@
     LayoutDashboard,
     UserRound,
     ArrowLeft,
-    UserRoundCog
+    UserRoundCog,
+    FlaskConical
   } from 'lucide-vue-next'
   </script>

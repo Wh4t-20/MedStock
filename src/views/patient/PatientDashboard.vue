@@ -83,7 +83,7 @@
 
                 </div>
               </td>
-              <td class="table-cell text-gray-500">{{ currentPatient.date_of_birth }}</td>
+              <td class="table-cell text-gray-500">{{ currentPatient.birth_date }}</td>
               <td class="table-cell text-gray-500">{{ currentPatient.contact_number }}</td>
               <td class="table-cell">
                 <!-- Ensure we pass patients_id to the function -->
