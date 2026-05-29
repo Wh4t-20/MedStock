@@ -26,12 +26,12 @@ import TechnicianDirectory from '@/views/technician/TechnicianDirectory.vue'
 
 // supabase stuffs 
 
-// import { supabase } from '@/api/supabase'
+import { supabase } from '@/api/supabase'
 
 
 import CrudPage   from '@/views/crudPage.vue'
 // Admin Portal
-//import AddPatient from '@/views/admin/addPatient.vue'
+import AddPatient from '@/views/adminPatient/addPatient.vue'
 //import ViewPatient from '@/views/adminPatient/viewPatient.vue'
 import DoctorsList from '@/views/adminDoctor/AdminDoctor.vue'
 import AdminDoctorLayout from '@/views/adminDoctor/AdminDoctorLayout.vue'
@@ -41,6 +41,12 @@ import AdminDoctorDashboard from '@/views/adminDoctor/AdminDoctorDashboard.vue'
 import AdminPatientLayout from '@/views/adminPatient/adminPatientLayout.vue'
 import AdminPatientDashboard from '@/views/adminPatient/adminPatientDashboard.vue'
 import adminViewPatient from '@/views/adminPatient/adminViewPatient.vue'
+
+//admin Technician
+import TechnicianList from '@/views/adminTechnician/adminTechnician.vue'
+import AdminTechnicianLayout from '@/views/adminTechnician/adminTechnicianLayout.vue'
+import AdminTechnicianDashboard from '@/views/adminTechnician/adminTechnicianDashboard.vue'
+import AdminTechnicianTestType from '@/views/adminTechnician/adminTechnicianTestType.vue'
 
 
 const router = createRouter({
@@ -97,17 +103,29 @@ const router = createRouter({
       children: [
         { path: '',           redirect: '/admin-doctor/dashboard' },
         { path: 'dashboard',  component: AdminDoctorDashboard,  name: 'aDoctor-dashboard' },
-        { path: 'doctorslist',      component: DoctorsList,      name: 'aDoctor-list'     },
+        { path: 'doctors',      component: DoctorsList,      name: 'aDoctor-list'     },
         ]
       },
     {
       path: '/admin-patient',
       component: AdminPatientLayout,
-      meta: { requiresAuth: true },
+      // meta: { requiresAuth: true },
       children: [
         { path: '',           redirect: '/admin-patient/dashboard' },
         { path: 'dashboard',  component: AdminPatientDashboard,  name: 'aPatient-dashboard' },
         { path: 'patients',    component: adminViewPatient,    name: 'aPatient-view'   },
+        { path: 'directory',  component: TechnicianDirectory,  name: 'tech-directory' },
+      ]
+    },
+    {
+      path: '/admin-technician',
+      component: AdminTechnicianLayout,
+      // meta: { requiresAuth: true },
+      children: [
+        { path: '',           redirect: '/admin-technician/dashboard' },
+        { path: 'dashboard',  component: AdminTechnicianDashboard,  name: 'aTechnician-dashboard' },
+        { path: 'technicians',    component: TechnicianList,    name: 'aTechnician-view'   },
+        { path: 'testype', component: AdminTechnicianTestType, name: 'aTechnician-testtype'}
       ]
     },
     { 
@@ -117,12 +135,12 @@ const router = createRouter({
       name: 'crud-home' 
     },
    
-   // { 
-     // path: '/adminPatient/addPatient',             
-      //component: AddPatient,   
+   { 
+     path: '/admin-patient/addPatient',             
+      component: AddPatient,   
       //meta: { requiresAuth: true },
-     // name: 'add-patient' 
-    //},
+      name: 'add-patient' 
+    },
   ]
 })
 //basically protection para di maablihan gamit searchbar
@@ -143,33 +161,33 @@ const router = createRouter({
 //   }
 // })
 
-// Basically checks if you have permission from supabase based on you role
-// router.beforeEach(async (to, _from, next) => {
-//   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+//Basically checks if you have permission from supabase based on you role
+router.beforeEach(async (to, _from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   
-//   if (requiresAuth) {
-//     const { data: { session } } = await supabase.auth.getSession()
+  if (requiresAuth) {
+    const { data: { session } } = await supabase.auth.getSession()
     
-//     if (!session) {
-//       return next('/')
-//     }
+    if (!session) {
+      return next('/')
+    }
 
-//     const requiredRole = to.meta.role
-//     const userRole = sessionStorage.getItem('userRole')
+    const requiredRole = to.meta.role
+    const userRole = sessionStorage.getItem('userRole')
 
-//     if (requiredRole && userRole !== requiredRole) {
-//       console.warn(`Access Denied: ${userRole} attempted to access ${requiredRole} route.`)
+    if (requiredRole && userRole !== requiredRole) {
+      console.warn(`Access Denied: ${userRole} attempted to access ${requiredRole} route.`)
       
-//       if (userRole === 'admin') return next('/crud')
-//       if (userRole === 'patient') return next('/patient')
-//       if (userRole === 'doctor') return next('/doctor')
-//       if (userRole === 'technician') return next('/technician')
+      if (userRole === 'admin') return next('/crud')
+      if (userRole === 'patient') return next('/patient')
+      if (userRole === 'doctor') return next('/doctor')
+      if (userRole === 'technician') return next('/technician')
       
-//       return next('/')
-//     }
-//   }
+      return next('/')
+    }
+  }
 
-//   next()
-// })
+  next()
+})
 
 export default router

@@ -21,6 +21,48 @@ export const doctorListings = {
       
     if (error) throw error
     return data
+  },
+  
+  async createDoctor(newDoctorData: any) {
+    const { data, error } = await supabase
+      .from('Doctor')
+      .insert([newDoctorData])
+      .select()
+      .single() 
+
+    if (error) {
+      console.error("Error creating doctor:", error)
+      throw error
+    }
+    return data
+  },
+
+  async updateDoctor(doctorId: string, updates: any) {
+    const { data, error } = await supabase
+      .from('Doctor')
+      .update(updates)
+      .eq('doctor_id', doctorId) 
+      .select()
+      .single()
+
+    if (error) {
+      console.error("Error updating doctor:", error)
+      throw error
+    }
+    return data
+  },
+
+  async deleteDoctor(doctorId: string) {
+    const { error } = await supabase
+      .from('Doctor')
+      .delete()
+      .eq('doctor_id', doctorId)
+
+    if (error) {
+      console.error("Error deleting doctor:", error)
+      throw error
+    }
+    return true
   }
   
 }

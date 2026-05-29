@@ -1,6 +1,6 @@
 <template>
   <!--<div class="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 flex flex-col"> -->
-    <div class="min-h-screen bg-center  flex flex-col" style="background-image: url('../LabPic.png')">
+    <div class="min-h-screen bg-cover bg-fixed  flex flex-col" style="background-image: url('../LabPic.png')">
     <header class="flex items-center justify-between px-8 py-6">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 bg-accent-400 rounded-xl flex items-center justify-center font-bold text-primary-900 text-xl">
