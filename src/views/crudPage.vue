@@ -20,7 +20,7 @@
           <div class="mt-4 btn-primary text-sm justify-center">Enter Portal →</div>
         </RouterLink>
 
-        <RouterLink to="/crud/add-patient" class="portal-card group">
+        <RouterLink to="/admin/add-patient" class="portal-card group">
           <div class="portal-icon bg-yellow-100 group-hover:bg-yellow-200">🧑‍⚕️</div>
           <h2 class="text-lg font-bold text-gray-900 mt-3">Patient Add</h2>
           <p class="text-sm text-gray-500 mt-1">TEST ONLY</p>

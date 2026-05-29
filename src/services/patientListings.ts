@@ -122,5 +122,18 @@ export const patientListings = {
     if (linkError) throw linkError
 
     return newPatient
+  },
+  async getCurrentPatient() {
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) throw new Error('Not authenticated')
+
+    const { data: patient, error: dbError } = await supabase
+      .from('Patient')
+      .select('*')
+      .eq('user_id', user.id)
+      .single()
+
+    if (dbError) throw dbError
+    return patient
   }
 }

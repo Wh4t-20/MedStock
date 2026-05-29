@@ -80,7 +80,7 @@
         <div class="mt-6 p-5 bg-blue-50 rounded-lg border border-blue-100">
           <label class="block text-sm font-bold text-blue-900 mb-2">Assign to Doctor:</label>
           <select v-model="selectedDoctorId" required class="w-full border border-blue-300 rounded-md px-3 py-2">
-            <option value="" disabled>Select a doctor...</option>
+            <option value="" disabled>Select a doctor</option>
             <option v-for="doc in doctorsList" :key="doc.doctor_id" :value="doc.doctor_id">
               Dr. {{ doc.first_name }} {{ doc.last_name }} - {{ doc.specialization }}
             </option>
