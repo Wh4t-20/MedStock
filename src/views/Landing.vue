@@ -184,7 +184,6 @@ const verifyOtp = async () => {
     if (data.user) {
       const uid = data.user.id
 
-      // 🟢 FIX 2: Added { data: admin } to the destructuring array here!
       const [{ data: doctor }, { data: patient }, { data: technician }, { data: admin }] = await Promise.all([
         supabase.from('Doctor').select('doctor_id').eq('user_id', uid).maybeSingle(),
         supabase.from('Patient').select('patient_id').eq('user_id', uid).maybeSingle(),
@@ -192,7 +191,7 @@ const verifyOtp = async () => {
         supabase.from('Admin').select('admin_id').eq('user_id', uid).maybeSingle(),
       ])
 
-      // 🟢 FIX 3: Added the Admin routing check!
+      
       if (doctor)          router.push('/doctor/dashboard')
       else if (patient)    router.push('/patient/dashboard')
       else if (technician) router.push('/technician/dashboard')
