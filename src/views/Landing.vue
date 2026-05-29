@@ -186,7 +186,7 @@ const verifyOtp = async () => {
 
       const [{ data: doctor }, { data: patient }, { data: technician }, { data: admin }] = await Promise.all([
         supabase.from('Doctor').select('doctor_id').eq('user_id', uid).maybeSingle(),
-        supabase.from('Patient').select('patient_id').eq('user_id', uid).maybeSingle(),
+        supabase.from('Patient').select('patients_id').eq('user_id', uid).maybeSingle(),
         supabase.from('LabTechnician').select('technician_id').eq('user_id', uid).maybeSingle(),
         supabase.from('Admin').select('admin_id').eq('user_id', uid).maybeSingle(),
       ])
