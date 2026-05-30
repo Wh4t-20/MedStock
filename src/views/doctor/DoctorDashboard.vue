@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-6">
-    
+
     <div>
-      <span v-if="isLoadingProfile" class="text-gray-500 font-medium">Loading pa bai...</span>
+      <span v-if="isLoading" class="text-gray-500 font-medium">Loading...</span>
       <span v-else-if="currentDoctor" class="font-bold font-mono text-lg text-primary-700">
         Welcome, Dr. {{ currentDoctor.last_name }} the GOAT 🔥🔥🔥
       </span>
@@ -11,10 +11,10 @@
     </div>
 
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      <StatCard icon="👥" label="Total Patients"    :value="Patients.length"          iconBg="bg-blue-100" />
-      <StatCard icon="📋" label="Total Requests"    :value="store.stats.totalRequests"    iconBg="bg-indigo-100" />
-      <StatCard icon="⏳" label="Pending"            :value="store.stats.pendingRequests"  iconBg="bg-amber-100" />
-      <StatCard icon="✅" label="Completed"          :value="store.stats.completedRequests" iconBg="bg-green-100" />
+      <StatCard icon="👥" label="Total Patients"  :value="patients.length"    iconBg="bg-blue-100" />
+      <StatCard icon="📋" label="Total Requests"  :value="totalRequests"      iconBg="bg-indigo-100" />
+      <StatCard icon="⏳" label="Pending"          :value="pendingRequests"    iconBg="bg-amber-100" />
+      <StatCard icon="✅" label="Completed"        :value="completedRequests"  iconBg="bg-green-100" />
     </div>
 
     <div class="card overflow-hidden bg-white shadow-sm rounded-xl border border-gray-100">
@@ -24,7 +24,7 @@
           View all →
         </RouterLink>
       </div>
-      
+
       <div class="overflow-x-auto">
         <table class="w-full text-left">
           <thead>
@@ -38,24 +38,20 @@
             </tr>
           </thead>
           <tbody>
-            
-            <tr v-if="isLoadingProfile">
-              <td colspan="4" class="p-8 text-center text-gray-400 font-medium">Loading your patients...</td>
+            <tr v-if="isLoading">
+              <td colspan="6" class="p-8 text-center text-gray-400 font-medium">Loading your patients...</td>
             </tr>
-            
-            <tr v-else-if="Patients.length === 0">
-              <td colspan="4" class="p-8 text-center text-gray-400 font-medium">No patients assigned to you yet.</td>
+            <tr v-else-if="patients.length === 0">
+              <td colspan="6" class="p-8 text-center text-gray-400 font-medium">No patients assigned to you yet.</td>
             </tr>
-
-            <tr v-else v-for="patient in Patients" :key="patient.patients_id" class="border-b border-gray-50 hover:bg-blue-50 transition-colors">
-              <td class="p-4 font-mono text-primary-700 font-medium">#{{ patient.patients_id }}</td>
+            <tr v-else v-for="patient in patients" :key="patient.patient_id" class="border-b border-gray-50 hover:bg-blue-50 transition-colors">
+              <td class="p-4 font-mono text-primary-700 font-medium">#{{ patient.patient_id }}</td>
               <td class="p-4 font-bold text-gray-900">{{ patient.first_name }}</td>
-              <td class="p-4 font-bold text-gray-900"> {{ patient.middle_name }}</td>
-              <td class="p-4 font-bold text-gray-900"> {{ patient.last_name }}</td>
-              <td class="p-4 text-gray-600">{{ patient.birth_date }}</td>
+              <td class="p-4 font-bold text-gray-900">{{ patient.middle_name }}</td>
+              <td class="p-4 font-bold text-gray-900">{{ patient.last_name }}</td>
+              <td class="p-4 text-gray-600">{{ patient.date_of_birth }}</td>
               <td class="p-4 text-gray-600">{{ patient.sex === 'M' ? 'Male' : patient.sex === 'F' ? 'Female' : 'Other' }}</td>
             </tr>
-            
           </tbody>
         </table>
       </div>
@@ -64,34 +60,40 @@
 </template>
 
 <script setup lang="ts">
-import {  ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
-import { useLabStore } from '@/stores/lab'
-import StatCard    from '@/components/StatCard.vue'
-
-import { doctorListings } from '@/services/doctorListings' 
+import { supabase } from '@/api/supabase'
+import StatCard from '@/components/StatCard.vue'
+import { doctorListings } from '@/services/doctorListings'
 import { patientListings } from '@/services/patientListings'
 
 const currentDoctor = ref<any>(null)
-const isLoadingProfile = ref(true)
-const Patients = ref<any[]>([])
+const isLoading = ref(true)
+const patients = ref<any[]>([])
+const totalRequests = ref(0)
+const pendingRequests = ref(0)
+const completedRequests = ref(0)
 
 onMounted(async () => {
   try {
     currentDoctor.value = await doctorListings.getCurrentDoctorProfile()
 
     if (currentDoctor.value) {
-      Patients.value = await patientListings.getPatientsByDoctor(currentDoctor.value.doctor_id)
+      const [patientsData, totalRes, pendingRes, completedRes] = await Promise.all([
+        patientListings.getPatientsByDoctor(currentDoctor.value.doctor_id),
+        supabase.from('LabRequest').select('*', { count: 'exact', head: true }),
+        supabase.from('LabRequest').select('*', { count: 'exact', head: true }).eq('status', 'Pending'),
+        supabase.from('LabRequest').select('*', { count: 'exact', head: true }).eq('status', 'Completed')
+      ])
+      patients.value = patientsData || []
+      totalRequests.value = totalRes.count || 0
+      pendingRequests.value = pendingRes.count || 0
+      completedRequests.value = completedRes.count || 0
     }
-    console.log("My Fetched Patients:", Patients.value)
-  } 
-  catch (error) {
-    console.error("Could not load doctor profile:", error)
+  } catch (error) {
+    console.error('Could not load dashboard data:', error)
   } finally {
-    isLoadingProfile.value = false
+    isLoading.value = false
   }
 })
-
-const store  = useLabStore()
-
 </script>

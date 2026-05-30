@@ -64,7 +64,7 @@
                    flex items-center justify-center
                    text-xs font-bold font-mono shrink-0"
           >
-            LF
+            {{ doctorInitials }}
           </div>
 
           <div
@@ -74,11 +74,11 @@
                    whitespace-nowrap"
           >
             <p class="text-xs font-semibold text-white truncate">
-              LUISA FERNANDEZ
+              {{ currentDoctor ? `${currentDoctor.first_name} ${currentDoctor.last_name}`.toUpperCase() : '—' }}
             </p>
 
             <p class="text-[10px] text-white/40 truncate">
-              dr.aquino@clinic.com
+              {{ currentDoctor?.email || '' }}
             </p>
           </div>
         </div>
@@ -128,16 +128,16 @@
                      flex items-center justify-center
                      text-xs font-bold font-mono"
             >
-              LF
+              {{ doctorInitials }}
             </div>
 
             <div class="hidden sm:block">
               <p class="text-xs font-semibold text-gray-800">
-                Dr. Luisa Fernandez
+                Dr. {{ currentDoctor ? `${currentDoctor.first_name} ${currentDoctor.last_name}` : '—' }}
               </p>
 
               <p class="text-[10px] text-gray-400 font-medium">
-                Physician
+                {{ currentDoctor?.specialization || 'Physician' }}
               </p>
             </div>
           </button>
@@ -154,8 +154,10 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 import NavItem from '@/components/NavItem.vue'
+import { doctorListings } from '@/services/doctorListings'
 
 import {
   Activity,
@@ -166,4 +168,19 @@ import {
   FlaskConical,
   ArrowLeft
 } from 'lucide-vue-next'
+
+const currentDoctor = ref<any>(null)
+
+const doctorInitials = computed(() => {
+  if (!currentDoctor.value) return 'DR'
+  const f = currentDoctor.value.first_name?.[0] || ''
+  const l = currentDoctor.value.last_name?.[0] || ''
+  return `${f}${l}`.toUpperCase()
+})
+
+onMounted(async () => {
+  try {
+    currentDoctor.value = await doctorListings.getCurrentDoctorProfile()
+  } catch {}
+})
 </script>

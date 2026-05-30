@@ -14,19 +14,16 @@
         placeholder="Search patient, doctor…"
         class="form-input max-w-xs border border-gray-300 rounded-lg px-3"
       />
-
-      <div class="relative w-48">
-        <select 
-          v-model="filterStatus" 
-          class="w-44 px-3 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer transition-colors duration-150 ease-in-out focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-        >
-          <option value="" class="text-gray-500">All Statuses</option>
-          <option value="Pending" class="text-amber-600 font-medium">Pending</option>
-          <option value="Processing" class="text-blue-600 font-medium">In Progress</option>
-          <option value="Completed" class="text-green-600 font-medium">Completed</option>
-          <option value="Cancelled" class="text-rose-600 font-medium">Cancelled</option>
-        </select>
-      </div>
+      <select
+        v-model="filterStatus"
+        class="w-44 px-3 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm cursor-pointer focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+      >
+        <option value="">All Statuses</option>
+        <option value="Pending">Pending</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
     </div>
 
     <div v-if="isLoading" class="text-center py-10 text-gray-500 font-medium">
@@ -41,7 +38,7 @@
               <th class="p-4 font-semibold">ID</th>
               <th class="p-4 font-semibold">Patient</th>
               <th class="p-4 font-semibold">Date</th>
-              <th class="p-4 font-semibold">Tests</th>
+              <th class="p-4 font-semibold">Test Results</th>
               <th class="p-4 font-semibold">Notes</th>
               <th class="p-4 font-semibold">Status</th>
               <th class="p-4 font-semibold">Actions</th>
@@ -54,9 +51,10 @@
               <td class="p-4 text-gray-600">{{ formatDate(req.request_date) }}</td>
               <td class="p-4">
                 <div class="flex flex-wrap gap-1">
-                  <span v-for="d in req.details" :key="d.detail_id || d.test_type.test_name"
+                  <span v-if="req.results.length === 0" class="text-gray-400 text-xs italic">None yet</span>
+                  <span v-for="r in req.results" :key="r.result_id"
                     class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full font-medium">
-                    {{ d.test_type.test_name }}
+                    {{ r.TestType?.test_name || '—' }}
                   </span>
                 </div>
               </td>
@@ -64,8 +62,8 @@
               <td class="p-4"><StatusBadge :status="req.status" /></td>
               <td class="p-4">
                 <div class="flex gap-3">
-                  <button @click="openDetail(req)" class="text-xs text-blue-600 hover:text-blue-800 font-bold transition-colors">View</button>
-                  <button @click="openEdit(req)" class="text-xs text-amber-600 hover:text-amber-800 font-bold transition-colors">Edit</button>
+                  <button @click="openDetail(req)" class="text-xs text-blue-600 hover:text-blue-800 font-bold">View</button>
+                  <button @click="openEdit(req)" class="text-xs text-amber-600 hover:text-amber-800 font-bold">Edit</button>
                 </div>
               </td>
             </tr>
@@ -77,6 +75,7 @@
       </div>
     </div>
 
+    <!-- Create Modal -->
     <Modal v-model="showCreate" title="New Lab Request">
       <form @submit.prevent="submitCreate" class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
@@ -84,7 +83,7 @@
             <label class="block text-sm font-bold text-gray-700 mb-1">Patient</label>
             <select v-model="form.patient_id" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
               <option value="" disabled>Select patient…</option>
-              <option v-for="p in dbPatients" :key="p.patients_id" :value="p.patients_id">
+              <option v-for="p in dbPatients" :key="p.patient_id" :value="p.patient_id">
                 {{ p.first_name }} {{ p.last_name }}
               </option>
             </select>
@@ -99,32 +98,20 @@
             </select>
           </div>
         </div>
-        
-        <div>
-          <label class="block text-sm font-bold text-gray-700 mb-1">Tests Requested</label>
-          <div class="grid grid-cols-2 gap-2 mt-1">
-            <label v-for="tt in dbTestTypes" :key="tt.test_type_id"
-              class="flex items-center gap-2 p-2 border border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer text-sm transition-colors">
-              <input type="checkbox" :value="tt.test_type_id" v-model="form.selectedTests" class="accent-blue-600 w-4 h-4" />
-              <span class="font-medium text-gray-800">{{ tt.test_name }}</span>
-            </label>
-          </div>
-        </div>
-        
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-1">Notes</label>
           <textarea v-model="form.notes" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm h-20 resize-none" placeholder="Clinical notes…"></textarea>
         </div>
-        
-        <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-2">
-          <button type="button" @click="showCreate = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">Cancel</button>
-          <button type="submit" :disabled="isSaving" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-md transition-colors">
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+          <button type="button" @click="showCreate = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">Cancel</button>
+          <button type="submit" :disabled="isSaving" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-md">
             {{ isSaving ? 'Creating...' : 'Create Request' }}
           </button>
         </div>
       </form>
     </Modal>
 
+    <!-- Detail Modal -->
     <Modal v-model="showDetail" :title="`Request #${selected?.request_id}`">
       <div v-if="selected" class="space-y-5">
         <div class="grid grid-cols-2 gap-4 text-sm">
@@ -132,7 +119,6 @@
             <p class="font-bold text-gray-800 mb-2">Patient</p>
             <p class="font-medium">{{ selected.patient.first_name }} {{ selected.patient.last_name }}</p>
             <p class="text-gray-500">📧 {{ selected.patient.email || 'No email' }}</p>
-            <p class="text-gray-500">📞 {{ selected.patient.contact_number || 'No contact' }}</p>
           </div>
           <div class="bg-blue-50 rounded-xl p-4 space-y-1 border border-blue-100">
             <p class="font-bold text-blue-900 mb-2">Requesting Doctor</p>
@@ -141,32 +127,24 @@
             <p class="text-blue-600">📧 {{ selected.doctor.email || 'No email' }}</p>
           </div>
         </div>
-        
-        <div>
-          <p class="font-bold text-gray-800 text-sm mb-2">Tests Ordered</p>
-          <div class="space-y-2">
-            <div v-for="d in selected.details" :key="d.detail_id || d.test_type.test_name"
-              class="flex items-center justify-between p-3 border border-gray-200 rounded-xl text-sm bg-white">
-              <div>
-                <span class="font-bold text-gray-800">{{ d.test_type.test_name }}</span>
-                <span class="ml-2 text-gray-500 text-xs bg-gray-100 px-2 py-0.5 rounded-md">{{ d.test_type.category || 'General' }}</span>
-              </div>
-            </div>
-          </div>
+
+        <div v-if="selected.notes" class="text-sm text-gray-600 italic bg-gray-50 rounded-xl p-4 border border-gray-100">
+          Notes: {{ selected.notes }}
         </div>
 
-        <div v-if="selected.results && selected.results.length">
-          <p class="font-bold text-gray-800 text-sm mb-2 pt-2 border-t border-gray-100">Completed Results</p>
-          <div class="space-y-2">
+        <div>
+          <p class="font-bold text-gray-800 text-sm mb-2">Test Results</p>
+          <div v-if="selected.results.length === 0" class="text-gray-400 text-sm italic p-3 bg-gray-50 rounded-xl">
+            No results recorded yet.
+          </div>
+          <div v-else class="space-y-2">
             <div v-for="r in selected.results" :key="r.result_id"
               class="p-3 bg-green-50 border border-green-200 rounded-xl text-sm">
               <div class="flex items-center justify-between mb-1">
-                <span class="font-bold text-green-800">
-                  {{ r.TestType?.test_name || 'Lab Result' }}
-                </span>
+                <span class="font-bold text-green-800">{{ r.TestType?.test_name || 'Lab Result' }}</span>
                 <span class="text-xs text-gray-500">{{ formatDate(r.result_date) }}</span>
               </div>
-              <p class="text-gray-900 font-medium text-base my-2">{{ r.result_value }}</p>
+              <p class="text-gray-900 font-medium text-base my-1">{{ r.result_value }}</p>
               <p v-if="r.remarks" class="text-gray-600 text-xs italic">Notes: {{ r.remarks }}</p>
             </div>
           </div>
@@ -174,13 +152,15 @@
       </div>
     </Modal>
 
+    <!-- Edit Modal -->
     <Modal v-model="showEdit" title="Update Request Status">
       <form v-if="editReq" @submit.prevent="submitEdit" class="space-y-4">
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-1">Status</label>
           <select v-model="editReq.status" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
             <option>Pending</option>
-            <option>Processing</option> <option>Completed</option>
+            <option>In Progress</option>
+            <option>Completed</option>
             <option>Cancelled</option>
           </select>
         </div>
@@ -188,9 +168,9 @@
           <label class="block text-sm font-bold text-gray-700 mb-1">Notes</label>
           <textarea v-model="editReq.notes" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm h-20 resize-none"></textarea>
         </div>
-        <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-2">
-          <button type="button" @click="showEdit = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">Cancel</button>
-          <button type="submit" :disabled="isSaving" class="px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-50 rounded-md transition-colors">
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+          <button type="button" @click="showEdit = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">Cancel</button>
+          <button type="submit" :disabled="isSaving" class="px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-50 rounded-md">
             {{ isSaving ? 'Saving...' : 'Save Changes' }}
           </button>
         </div>
@@ -203,50 +183,38 @@
 import { ref, computed, reactive, onMounted } from 'vue'
 import { supabase } from '@/api/supabase'
 import StatusBadge from '@/components/StatusBadge.vue'
-import Modal       from '@/components/Modal.vue'
+import Modal from '@/components/Modal.vue'
 
-// --- State Variables ---
-const isLoading    = ref(true)
-const isSaving     = ref(false)
-const search       = ref('')
+const isLoading = ref(true)
+const isSaving = ref(false)
+const search = ref('')
 const filterStatus = ref('')
 
-// Modal Toggles
-const showCreate   = ref(false)
-const showDetail   = ref(false)
-const showEdit     = ref(false)
+const showCreate = ref(false)
+const showDetail = ref(false)
+const showEdit = ref(false)
 
-// Data Arrays for the Dropdowns & Table
-const requests    = ref<any[]>([])
-const dbPatients  = ref<any[]>([])
-const dbDoctors   = ref<any[]>([])
-const dbTestTypes = ref<any[]>([])
+const requests = ref<any[]>([])
+const dbPatients = ref<any[]>([])
+const dbDoctors = ref<any[]>([])
 
-// Selected Items
-const selected    = ref<any | null>(null)
-const editReq     = ref<any | null>(null)
+const selected = ref<any | null>(null)
+const editReq = ref<any | null>(null)
 
-const form = reactive({
-  patient_id: '', doctor_id: '', notes: '', selectedTests: [] as string[]
-})
+const form = reactive({ patient_id: '', doctor_id: '', notes: '' })
 
-// --- Initialization (Fetch from Supabase) ---
-const fetchData = async () => {
+async function fetchData() {
   try {
     isLoading.value = true
 
-    // Fetch dropdown data for the "Create" form
-    const [ { data: pData }, { data: dData }, { data: tData } ] = await Promise.all([
+    const [{ data: pData }, { data: dData }] = await Promise.all([
       supabase.from('Patient').select('*'),
-      supabase.from('Doctor').select('*'),
-      supabase.from('TestType').select('*')
+      supabase.from('Doctor').select('*')
     ])
-    
-    dbPatients.value  = pData || []
-    dbDoctors.value   = dData || []
-    dbTestTypes.value = tData || []
 
-    // Fetch ALL Lab Requests and join the connected tables
+    dbPatients.value = pData || []
+    dbDoctors.value = dData || []
+
     const { data: reqData, error } = await supabase
       .from('LabRequest')
       .select(`
@@ -262,53 +230,39 @@ const fetchData = async () => {
 
     if (error) throw error
 
-    // Reformat the raw Supabase data so your template structure doesn't break
-    if (reqData) {
-      requests.value = reqData.map(r => ({
-        request_id: r.request_id,
-        status: r.status,
-        notes: r.notes,
-        request_date: r.request_date,
-        // Map capitalized Supabase tables to lowercase template variables
-        patient: r.Patient || {},
-        doctor: r.Doctor || {},
-        // Treat 'TestResult' rows as the requested tests details
-        details: (r.TestResult || []).map((tr: any) => ({
-          detail_id: tr.result_id,
-          test_type: tr.TestType || {}
-        })),
-        // Filter actual finished results (assuming they have a value)
-        results: (r.TestResult || []).filter((tr: any) => tr.result_value !== null)
-      }))
-    }
+    requests.value = (reqData || []).map(r => ({
+      request_id: r.request_id,
+      status: r.status,
+      notes: r.notes,
+      request_date: r.request_date,
+      patient: r.Patient || {},
+      doctor: r.Doctor || {},
+      results: r.TestResult || []
+    }))
   } catch (error) {
-    console.error("Error loading data:", error)
+    console.error('Error loading data:', error)
   } finally {
     isLoading.value = false
   }
 }
 
-onMounted(() => {
-  fetchData()
-})
+onMounted(fetchData)
 
-// --- Computed Filters ---
 const filtered = computed(() =>
   requests.value.filter(r => {
     const q = search.value.toLowerCase()
     const matchSearch = !q ||
       `${r.patient.first_name} ${r.patient.last_name}`.toLowerCase().includes(q) ||
       `${r.doctor.first_name} ${r.doctor.last_name}`.toLowerCase().includes(q) ||
-      String(r.request_id).toLowerCase().includes(q)
+      String(r.request_id).includes(q)
     const matchStatus = !filterStatus.value || r.status === filterStatus.value
     return matchSearch && matchStatus
   })
 )
 
-// --- Modal Handlers ---
-function openDetail(req: any) { 
-  selected.value = req 
-  showDetail.value = true 
+function openDetail(req: any) {
+  selected.value = req
+  showDetail.value = true
 }
 
 function openEdit(req: any) {
@@ -316,46 +270,27 @@ function openEdit(req: any) {
   showEdit.value = true
 }
 
-// --- Supabase Database Interactions ---
-
 async function submitCreate() {
-  if (!form.selectedTests.length) return alert('Please select at least one test.')
   isSaving.value = true
-
   try {
-    // 1. Create the overarching Lab Request
-    const { data: newReq, error: reqErr } = await supabase
+    const { error } = await supabase
       .from('LabRequest')
       .insert({
         patient_id: form.patient_id,
         doctor_id: form.doctor_id,
         notes: form.notes,
         status: 'Pending',
-        request_date: new Date().toISOString()
+        request_date: new Date().toISOString().split('T')[0]
       })
-      .select()
-      .single()
 
-    if (reqErr) throw reqErr
+    if (error) throw error
 
-    // 2. Insert the specific tests they selected into the TestResult table
-    const testsToInsert = form.selectedTests.map(testId => ({
-      request_id: newReq.request_id,
-      test_type_id: testId,
-      status: 'Pending'
-    }))
-
-    const { error: testErr } = await supabase.from('TestResult').insert(testsToInsert)
-    if (testErr) throw testErr
-
-    // 3. Reset form and refresh the table
-    Object.assign(form, { patient_id: '', doctor_id: '', notes: '', selectedTests: [] })
+    Object.assign(form, { patient_id: '', doctor_id: '', notes: '' })
     showCreate.value = false
-    await fetchData() // Refresh the list!
-
+    await fetchData()
   } catch (err) {
-    console.error("Failed to create request:", err)
-    alert("Could not create request. Check console.")
+    console.error('Failed to create request:', err)
+    alert('Could not create request. Check console.')
   } finally {
     isSaving.value = false
   }
@@ -364,7 +299,6 @@ async function submitCreate() {
 async function submitEdit() {
   if (!editReq.value) return
   isSaving.value = true
-
   try {
     const { error } = await supabase
       .from('LabRequest')
@@ -372,11 +306,10 @@ async function submitEdit() {
       .eq('request_id', editReq.value.request_id)
 
     if (error) throw error
-
     showEdit.value = false
-    await fetchData() // Refresh the list!
+    await fetchData()
   } catch (err) {
-    console.error("Failed to update status:", err)
+    console.error('Failed to update request:', err)
   } finally {
     isSaving.value = false
   }
