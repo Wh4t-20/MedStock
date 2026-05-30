@@ -57,14 +57,7 @@
           class="flex items-center gap-3 px-3 py-2
                  rounded-xl bg-white/5 min-w-[180px]"
         >
-          <div
-            class="w-8 h-8 rounded-full
-                   bg-[#F5A623] text-[#1A1F3A]
-                   flex items-center justify-center
-                   text-xs font-bold font-mono shrink-0"
-          >
-            LF
-          </div>
+          
 
           <div
             class="flex-1 min-w-0 opacity-0
@@ -72,16 +65,11 @@
                    transition-opacity duration-300
                    whitespace-nowrap"
           >
-            <p class="text-xs font-semibold text-white truncate">
-              LUISA FERNANDEZ
-            </p>
+          
 
-            <p class="text-[10px] text-white/40 truncate">
-              dr.aquino@clinic.com
-            </p>
           </div>
         </div>
-
+      
         <RouterLink
           to="/"
           class="flex items-center gap-2

@@ -41,7 +41,7 @@
               <th class="p-4 font-semibold">ID</th>
               <th class="p-4 font-semibold">Patient</th>
               <th class="p-4 font-semibold">Date</th>
-              <th class="p-4 font-semibold">Tests</th>
+        
               <th class="p-4 font-semibold">Notes</th>
               <th class="p-4 font-semibold">Status</th>
               <th class="p-4 font-semibold">Actions</th>
@@ -52,14 +52,7 @@
               <td class="p-4 font-mono text-primary-700 font-semibold">#{{ req.request_id }}</td>
               <td class="p-4 font-medium text-gray-900">{{ req.patient.first_name }} {{ req.patient.last_name }}</td>
               <td class="p-4 text-gray-600">{{ formatDate(req.request_date) }}</td>
-              <td class="p-4">
-                <div class="flex flex-wrap gap-1">
-                  <span v-for="d in req.details" :key="d.detail_id || d.test_type.test_name"
-                    class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full font-medium">
-                    {{ d.test_type.test_name }}
-                  </span>
-                </div>
-              </td>
+          
               <td class="p-4 max-w-[140px] truncate text-gray-500 text-xs italic">{{ req.notes || '—' }}</td>
               <td class="p-4"><StatusBadge :status="req.status" /></td>
               <td class="p-4">

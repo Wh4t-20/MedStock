@@ -34,6 +34,7 @@ export const doctorListings = {
   },
 
   async getAllDoctors() {
+    // This fetches the doctor AND their related contact numbers
     const { data, error } = await supabase
       .from('Doctor')
       .select('*, DoctorContactNumber(dcontact_number)')

@@ -5,7 +5,7 @@
         <h2 class="text-2xl font-bold font-mono text-[#18265F]">Patients</h2>
         <p class="text-gray-500 text-sm mt-0.5">Manage patient records</p>
       </div>
-      <button @click="openCreate" class="btn-primary" :disabled="isLoading">+ Add Patient</button>
+     
     </div>
 
     <input v-model="search" placeholder="Search by name, email, contact…" class="form-input max-w-sm" />
@@ -159,11 +159,7 @@ function bmi(w: number, h: number) {
 }
 
 // 3. Modal Controls
-function openCreate() { 
-  Object.assign(form, blank())
-  editMode.value = false
-  showModal.value = true 
-}
+
 
 function openEdit(p: any) {
   // Pull out patients_id so it doesn't get pushed into the form inputs
