@@ -17,6 +17,7 @@ export const doctorListings = {
   async getAllDoctors() {
     const { data, error } = await supabase
       .from('Doctor')
+      .select('*, DoctorContanctNumber(dcontact_number)')
       .select('*')
       
     if (error) throw error
@@ -24,9 +25,10 @@ export const doctorListings = {
   },
   
   async createDoctor(newDoctorData: any) {
+    const { contact_number, ...mainData } = newDoctorData
     const { data, error } = await supabase
       .from('Doctor')
-      .insert([newDoctorData])
+      .insert([mainData])
       .select()
       .single() 
 
