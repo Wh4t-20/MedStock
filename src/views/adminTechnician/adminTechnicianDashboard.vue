@@ -60,7 +60,7 @@
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import StatCard from '@/components/StatCard.vue'
-import { technicianListings } from '@/services/technicianListings' // Make sure this matches your filename
+import { technicianListings } from '@/services/technicianListings' 
 
 const isLoading = ref(true)
 const Technicians = ref<any[]>([])
