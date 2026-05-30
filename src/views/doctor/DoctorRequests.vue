@@ -65,7 +65,7 @@
               <td class="p-4">
                 <div class="flex gap-3">
                   <button @click="openDetail(req)" class="text-xs text-blue-600 hover:text-blue-800 font-bold transition-colors">View</button>
-                  <button @click="openEdit(req)" class="text-xs text-amber-600 hover:text-amber-800 font-bold transition-colors">Edit</button>
+                  <button @click="openUpdate(req)" class="text-xs text-amber-600 hover:text-amber-800 font-bold transition-colors">Update</button>
                 </div>
               </td>
             </tr>
@@ -174,28 +174,62 @@
       </div>
     </Modal>
 
-    <Modal v-model="showEdit" title="Update Request Status">
-      <form v-if="editReq" @submit.prevent="submitEdit" class="space-y-4">
+    <Modal v-model="showUpdate" title="Update Lab Request">
+      <form v-if="updateForm" @submit.prevent="submitUpdate" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Patient</label>
+            <select v-model="updateForm.patient_id" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+              <option v-for="p in dbPatients" :key="p.patients_id" :value="p.patients_id">
+                {{ p.first_name }} {{ p.last_name }}
+              </option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Doctor</label>
+            <select v-model="updateForm.doctor_id" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+              <option v-for="d in dbDoctors" :key="d.doctor_id" :value="d.doctor_id">
+                Dr. {{ d.first_name }} {{ d.last_name }}
+              </option>
+            </select>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Tests Requested</label>
+          <div class="grid grid-cols-2 gap-2 mt-1">
+            <label v-for="tt in dbTestTypes" :key="tt.test_type_id"
+              class="flex items-center gap-2 p-2 border border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer text-sm transition-colors">
+              <input type="checkbox" :value="tt.test_type_id" v-model="updateForm.selectedTests" class="accent-blue-600 w-4 h-4" />
+              <span class="font-medium text-gray-800">{{ tt.test_name }}</span>
+            </label>
+          </div>
+        </div>
+        
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-1">Status</label>
-          <select v-model="editReq.status" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+          <select v-model="updateForm.status" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
             <option>Pending</option>
-            <option>Processing</option> <option>Completed</option>
+            <option>Processing</option>
+            <option>Completed</option>
             <option>Cancelled</option>
           </select>
         </div>
+
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-1">Notes</label>
-          <textarea v-model="editReq.notes" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm h-20 resize-none"></textarea>
+          <textarea v-model="updateForm.notes" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm h-20 resize-none"></textarea>
         </div>
+        
         <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-2">
-          <button type="button" @click="showEdit = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">Cancel</button>
-          <button type="submit" :disabled="isSaving" class="px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-50 rounded-md transition-colors">
-            {{ isSaving ? 'Saving...' : 'Save Changes' }}
+          <button type="button" @click="showUpdate = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">Cancel</button>
+          <button type="submit" :disabled="isSaving" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-md transition-colors">
+            {{ isSaving ? 'Updating...' : 'Update Request' }}
           </button>
         </div>
       </form>
     </Modal>
+
   </div>
 </template>
 
@@ -214,7 +248,7 @@ const filterStatus = ref('')
 // Modal Toggles
 const showCreate   = ref(false)
 const showDetail   = ref(false)
-const showEdit     = ref(false)
+const showUpdate   = ref(false)
 
 // Data Arrays for the Dropdowns & Table
 const requests    = ref<any[]>([])
@@ -224,18 +258,16 @@ const dbTestTypes = ref<any[]>([])
 
 // Selected Items
 const selected    = ref<any | null>(null)
-const editReq     = ref<any | null>(null)
+const updateForm  = ref<any | null>(null)
 
 const form = reactive({
   patient_id: '', doctor_id: '', notes: '', selectedTests: [] as string[]
 })
 
-// --- Initialization (Fetch from Supabase) ---
 const fetchData = async () => {
   try {
     isLoading.value = true
 
-    // Fetch dropdown data for the "Create" form
     const [ { data: pData }, { data: dData }, { data: tData } ] = await Promise.all([
       supabase.from('Patient').select('*'),
       supabase.from('Doctor').select('*'),
@@ -262,22 +294,18 @@ const fetchData = async () => {
 
     if (error) throw error
 
-    // Reformat the raw Supabase data so your template structure doesn't break
     if (reqData) {
       requests.value = reqData.map(r => ({
         request_id: r.request_id,
-        status: r.status,
+        status: r.status, 
         notes: r.notes,
         request_date: r.request_date,
-        // Map capitalized Supabase tables to lowercase template variables
         patient: r.Patient || {},
         doctor: r.Doctor || {},
-        // Treat 'TestResult' rows as the requested tests details
         details: (r.TestResult || []).map((tr: any) => ({
           detail_id: tr.result_id,
           test_type: tr.TestType || {}
         })),
-        // Filter actual finished results (assuming they have a value)
         results: (r.TestResult || []).filter((tr: any) => tr.result_value !== null)
       }))
     }
@@ -292,7 +320,6 @@ onMounted(() => {
   fetchData()
 })
 
-// --- Computed Filters ---
 const filtered = computed(() =>
   requests.value.filter(r => {
     const q = search.value.toLowerCase()
@@ -311,19 +338,25 @@ function openDetail(req: any) {
   showDetail.value = true 
 }
 
-function openEdit(req: any) {
-  editReq.value = { request_id: req.request_id, status: req.status, notes: req.notes }
-  showEdit.value = true
+function openUpdate(req: any) {
+  console.log("Opening Update for Request:", req); // <--- Add this!
+  updateForm.value = {
+    request_id: req.request_id, // Make sure this exactly matches your database column!
+    patient_id: req.patient.patients_id || req.patient.patient_id,
+    doctor_id: req.doctor.doctor_id,
+    status: req.test_result || req.status, // Safely handle either column name
+    notes: req.notes,
+    selectedTests: req.details ? req.details.map((d: any) => d.test_type?.test_type_id).filter(Boolean) : []
+  }
+  showUpdate.value = true
 }
 
-// --- Supabase Database Interactions ---
 
 async function submitCreate() {
   if (!form.selectedTests.length) return alert('Please select at least one test.')
   isSaving.value = true
 
   try {
-    // 1. Create the overarching Lab Request
     const { data: newReq, error: reqErr } = await supabase
       .from('LabRequest')
       .insert({
@@ -338,20 +371,17 @@ async function submitCreate() {
 
     if (reqErr) throw reqErr
 
-    // 2. Insert the specific tests they selected into the TestResult table
     const testsToInsert = form.selectedTests.map(testId => ({
       request_id: newReq.request_id,
-      test_type_id: testId,
-      status: 'Pending'
+      test_type_id: testId
     }))
 
     const { error: testErr } = await supabase.from('TestResult').insert(testsToInsert)
     if (testErr) throw testErr
 
-    // 3. Reset form and refresh the table
     Object.assign(form, { patient_id: '', doctor_id: '', notes: '', selectedTests: [] })
     showCreate.value = false
-    await fetchData() // Refresh the list!
+    await fetchData() 
 
   } catch (err) {
     console.error("Failed to create request:", err)
@@ -361,22 +391,53 @@ async function submitCreate() {
   }
 }
 
-async function submitEdit() {
-  if (!editReq.value) return
+async function submitUpdate() {
+  if (!updateForm.value || !updateForm.value.selectedTests.length) {
+    return alert('Please select at least one test.')
+  }
+  
   isSaving.value = true
 
   try {
-    const { error } = await supabase
+    const reqId = updateForm.value.request_id
+
+    const { error: reqErr } = await supabase
       .from('LabRequest')
-      .update({ status: editReq.value.status, notes: editReq.value.notes })
-      .eq('request_id', editReq.value.request_id)
+      .update({
+        patient_id: updateForm.value.patient_id,
+        doctor_id: updateForm.value.doctor_id,
+        status: updateForm.value.status,
+        notes: updateForm.value.notes
+      })
+      .eq('request_id', reqId)
 
-    if (error) throw error
+    if (reqErr) throw reqErr
 
-    showEdit.value = false
-    await fetchData() // Refresh the list!
+
+    const { error: delErr } = await supabase
+      .from('TestResult')
+      .delete()
+      .eq('request_id', reqId)
+      
+    if (delErr) throw delErr
+
+    const testsToInsert = updateForm.value.selectedTests.map((testId: string) => ({
+      request_id: reqId,
+      test_type_id: testId
+    }))
+
+    const { error: testErr } = await supabase
+      .from('TestResult')
+      .insert(testsToInsert)
+
+    if (testErr) throw testErr
+
+    showUpdate.value = false
+    await fetchData()
+    
   } catch (err) {
-    console.error("Failed to update status:", err)
+    console.error("Failed to update full request:", err)
+    alert("Could not update request. Check console.")
   } finally {
     isSaving.value = false
   }

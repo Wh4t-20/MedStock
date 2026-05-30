@@ -72,7 +72,7 @@
               </p>
   
               <p class="text-[10px] text-white/40 truncate">
-                Doctor
+                Technician
               </p>
             </div>
           </div>
