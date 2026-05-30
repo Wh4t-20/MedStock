@@ -22,7 +22,7 @@
         <p class="text-sm text-primary-600 font-medium mt-0.5">Sex: {{ p.sex }}</p>
         <div class="mt-3 space-y-1 text-sm text-gray-500">
           <p>📧 {{ p.email || 'No email' }}</p>
-          <p>📞 {{ p.contact_number || 'No contact' }}</p>
+          <p>📞 {{ p.pcontact_number || 'No contact' }}</p>
         </div>
         
         <div class="flex gap-2 mt-4 pt-3 border-t border-gray-100">
@@ -69,7 +69,7 @@
         
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-1">Contact Number</label>
-          <input type="tel" v-model="form.contact_number" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+          <input type="tel" v-model="form.pcontact_number" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
         </div>
 
         <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-4">
@@ -167,7 +167,7 @@
           Contact Number
         </label>
         <input
-          v-model="addForm.contact_number"
+          v-model="addForm.pcontact_number"
           class="w-full border border-gray-300 rounded-md px-3 py-2"
         />
       </div>
@@ -275,7 +275,7 @@ const form = ref({
   birth_date: '',
   sex: 'M',
   email: '',
-  contact_number: ''
+  pcontact_number: ''
 })
 const showAddModal = ref(false)
 const isSubmitting = ref(false)
@@ -293,7 +293,7 @@ const addForm = ref({
   weight: null as number | null,
   height: null as number | null,
   email: '',
-  contact_number: ''
+  pcontact_number: ''
 })
 // Extract the fetch logic so we can call it after updating/deleting to refresh the screen
 const fetchPatients = async () => {
@@ -330,7 +330,7 @@ const openEdit = (patient: any) => {
     birth_date: patient.birth_date || patient.date_of_birth || '',
     sex: patient.sex || 'M',
     email: patient.email || '',
-    contact_number: patient.contact_number || ''
+    pcontact_number: patient.pcontact_number || ''
   }
   
   showModal.value = true
@@ -374,7 +374,7 @@ const submitAddPatient = async () => {
       weight: null,
       height: null,
       email: '',
-      contact_number: ''
+      pcontact_number: ''
     }
 
     selectedDoctorId.value = ''

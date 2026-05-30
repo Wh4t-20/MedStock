@@ -49,7 +49,7 @@
             </div>
             <p class="text-xs text-gray-500 mb-1">Normal: {{ result.TestType?.normal_range }}</p>
             <p class="text-sm font-medium text-gray-700">{{ result.result_value }}</p>
-            <p v-if="result.remarks" class="text-xs text-gray-500 mt-0.5">{{ result.remarks }}</p>
+            <p v-if="result.remark" class="text-xs text-gray-500 mt-0.5">{{ result.remark }}</p>
           </div>
 
           <div v-if="!req.TestResult?.length" class="p-4 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-400">
@@ -102,7 +102,7 @@
         </div>
         <div>
           <label class="form-label">Remarks</label>
-          <textarea v-model="resultForm.remarks" class="form-input h-20 resize-none" placeholder="Clinical remarks…"></textarea>
+          <textarea v-model="resultForm.remark" class="form-input h-20 resize-none" placeholder="Clinical remarks…"></textarea>
         </div>
         <div class="flex justify-end gap-3 pt-2">
           <button type="button" @click="showResultModal = false" class="btn-secondary">Cancel</button>
@@ -132,7 +132,7 @@ const errorMsg    = ref('')
 const showResultModal = ref(false)
 const currentReq      = ref<any>(null)
 const resultForm      = reactive({
-  test_type_id: '' as any, technician_id: '' as any, result_value: '', remarks: ''
+  test_type_id: '' as any, technician_id: '' as any, result_value: '', remark: ''
 })
 
 async function fetchQueue() {
@@ -197,7 +197,7 @@ async function markComplete(id: number) {
 
 function openResultForm(req: any) {
   currentReq.value = req
-  Object.assign(resultForm, { test_type_id: '', technician_id: '', result_value: '', remarks: '' })
+  Object.assign(resultForm, { test_type_id: '', technician_id: '', result_value: '', remark: '' })
   showResultModal.value = true
 }
 
@@ -209,7 +209,7 @@ async function submitResult() {
     test_type_id:  Number(resultForm.test_type_id),
     technician_id: Number(resultForm.technician_id),
     result_value:  resultForm.result_value,
-    remarks:       resultForm.remarks,
+    remark:       resultForm.remark,
     result_date:   new Date().toISOString().split('T')[0]
   })
 

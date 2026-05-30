@@ -44,8 +44,8 @@
             <tr v-else-if="patients.length === 0">
               <td colspan="6" class="p-8 text-center text-gray-400 font-medium">No patients assigned to you yet.</td>
             </tr>
-            <tr v-else v-for="patient in patients" :key="patient.patient_id" class="border-b border-gray-50 hover:bg-blue-50 transition-colors">
-              <td class="p-4 font-mono text-primary-700 font-medium">#{{ patient.patient_id }}</td>
+            <tr v-else v-for="patient in patients" :key="patient.patients_id" class="border-b border-gray-50 hover:bg-blue-50 transition-colors">
+              <td class="p-4 font-mono text-primary-700 font-medium">#{{ patient.patients_id }}</td>
               <td class="p-4 font-bold text-gray-900">{{ patient.first_name }}</td>
               <td class="p-4 font-bold text-gray-900">{{ patient.middle_name }}</td>
               <td class="p-4 font-bold text-gray-900">{{ patient.last_name }}</td>

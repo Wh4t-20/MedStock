@@ -5,7 +5,7 @@
         <h2 class="text-2xl font-bold font-mono text-[#18265F]">Patients</h2>
         <p class="text-gray-500 text-sm mt-0.5">Manage patient records</p>
       </div>
-      <button @click="openCreate" class="btn-primary" :disabled="isLoading">+ Add Patient</button>
+      <!--<button @click="openCreate" class="btn-primary" :disabled="isLoading">+ Add Patient</button>-->
     </div>
 
     <input v-model="search" placeholder="Search by name, email, contact…" class="form-input max-w-sm" />
@@ -31,8 +31,8 @@
             <tr v-else-if="filtered.length === 0">
               <td colspan="7" class="p-8 text-center text-gray-400 font-medium">No matching patients found.</td>
             </tr>
-            <tr v-else v-for="p in filtered" :key="p.patient_id" class="border-b border-gray-50 hover:bg-blue-50 transition-colors">
-              <td class="p-4 font-mono text-primary-700 font-semibold">#{{ p.patient_id }}</td>
+            <tr v-else v-for="p in filtered" :key="p.patients_id" class="border-b border-gray-50 hover:bg-blue-50 transition-colors">
+              <td class="p-4 font-mono text-primary-700 font-semibold">#{{ p.patients_id }}</td>
               <td class="p-4 font-medium text-gray-900">{{ p.first_name }} {{ p.middle_name }} {{ p.last_name }}</td>
               <td class="p-4 text-gray-500 text-sm">{{ p.date_of_birth }}</td>
               <td class="p-4 text-gray-600 text-sm">{{ p.sex }}</td>
@@ -41,7 +41,7 @@
               <td class="p-4">
                 <div class="flex gap-3">
                   <button @click="openEdit(p)" class="text-xs text-amber-600 hover:text-amber-800 font-bold transition-colors">Edit</button>
-                  <button @click="del(p.patient_id)" class="text-xs text-red-600 hover:text-red-800 font-bold transition-colors">Delete</button>
+                  <button @click="del(p.patients_id)" class="text-xs text-red-600 hover:text-red-800 font-bold transition-colors">Delete</button>
                 </div>
               </td>
             </tr>

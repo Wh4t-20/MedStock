@@ -112,7 +112,7 @@ export const patientListings = {
     const { error: linkError } = await supabase
       .from('LabRequest')
       .insert([{
-        patient_id:   newPatient.patients_id,
+        patient_id:   newPatient.patient_id,
         doctor_id:    doctorId,
         request_date: new Date().toISOString().split('T')[0],
         status:       'Pending',
