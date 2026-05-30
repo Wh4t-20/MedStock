@@ -19,8 +19,20 @@
             <p class="text-sm text-gray-500">Dr. {{ req.Doctor?.first_name }} {{ req.Doctor?.last_name }} · {{ formatDate(req.request_date) }}</p>
           </div>
           <div class="flex gap-2">
-            <button v-if="req.status === 'Pending'"     @click="markInProgress(req.request_id)" class="btn-accent text-xs">Start Processing</button>
-            <button v-if="req.status === 'In Progress'" @click="markComplete(req.request_id)"   class="btn-primary text-xs bg-green-600 hover:bg-green-700">Mark Complete</button>
+            <button
+              v-if="req.status === 'Pending'"
+              @click="markInProgress(req.request_id)"
+              :disabled="updating === req.request_id"
+              class="btn-accent text-xs disabled:opacity-50">
+              {{ updating === req.request_id ? 'Updating…' : 'Start Processing' }}
+            </button>
+            <button
+              v-if="req.status === 'In Progress'"
+              @click="markComplete(req.request_id)"
+              :disabled="updating === req.request_id"
+              class="btn-primary text-xs bg-green-600 hover:bg-green-700 disabled:opacity-50">
+              {{ updating === req.request_id ? 'Updating…' : 'Mark Complete' }}
+            </button>
           </div>
         </div>
 
@@ -54,12 +66,21 @@
       </div>
     </div>
 
+    <!-- Error banner -->
+    <div v-if="errorMsg" class="fixed bottom-4 right-4 bg-red-600 text-white px-4 py-3 rounded-xl shadow-lg text-sm z-50">
+      ⚠️ {{ errorMsg }}
+      <button @click="errorMsg = ''" class="ml-3 underline">Dismiss</button>
+    </div>
+
     <!-- Enter Result Modal -->
     <Modal v-model="showResultModal" title="Enter Test Result">
       <form @submit.prevent="submitResult" class="space-y-4">
         <div>
           <label class="form-label">Test Type</label>
-          <select v-model="resultForm.test_type_id" required class="form-select">
+          <div v-if="!testTypes.length" class="text-sm text-red-500 bg-red-50 p-2 rounded-lg">
+            No test types found. Please add test types first.
+          </div>
+          <select v-else v-model="resultForm.test_type_id" required class="form-select">
             <option value="" disabled>Select test type…</option>
             <option v-for="tt in testTypes" :key="tt.test_type_id" :value="tt.test_type_id">
               {{ tt.test_name }} — {{ tt.category }}
@@ -81,7 +102,7 @@
         </div>
         <div>
           <label class="form-label">Remarks</label>
-          <textarea v-model="resultForm.remarks" class="form-input h-20 resize-none" placeholder="Clinical remarks or interpretation…"></textarea>
+          <textarea v-model="resultForm.remarks" class="form-input h-20 resize-none" placeholder="Clinical remarks…"></textarea>
         </div>
         <div class="flex justify-end gap-3 pt-2">
           <button type="button" @click="showResultModal = false" class="btn-secondary">Cancel</button>
@@ -105,15 +126,17 @@ const testTypes   = ref<any[]>([])
 const technicians = ref<any[]>([])
 const loading     = ref(true)
 const submitting  = ref(false)
+const updating    = ref<number | null>(null)
+const errorMsg    = ref('')
 
 const showResultModal = ref(false)
 const currentReq      = ref<any>(null)
 const resultForm      = reactive({
-  test_type_id: '', technician_id: '', result_value: '', remarks: ''
+  test_type_id: '' as any, technician_id: '' as any, result_value: '', remarks: ''
 })
 
 async function fetchQueue() {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('LabRequest')
     .select(`
       *,
@@ -123,33 +146,53 @@ async function fetchQueue() {
     `)
     .in('status', ['Pending', 'In Progress'])
     .order('request_date', { ascending: true })
+
+  if (error) { errorMsg.value = `Queue fetch failed: ${error.message}`; return }
   queue.value = data ?? []
 }
 
 onMounted(async () => {
   try {
-    const [, { data: tt }, { data: techs }] = await Promise.all([
+    const [, ttRes, techRes] = await Promise.all([
       fetchQueue(),
-      supabase.from('TestType').select('*'),
+      supabase.from('TestType').select('test_type_id, test_name, category, normal_range'),
       supabase.from('LabTechnician').select('technician_id, first_name, last_name')
     ])
-    testTypes.value   = tt   ?? []
-    technicians.value = techs ?? []
-  } catch (e) {
-    console.error(e)
+
+    if (ttRes.error)   errorMsg.value = `TestType fetch failed: ${ttRes.error.message}`
+    if (techRes.error) errorMsg.value = `Technician fetch failed: ${techRes.error.message}`
+
+    testTypes.value   = ttRes.data   ?? []
+    technicians.value = techRes.data ?? []
+  } catch (e: any) {
+    errorMsg.value = e.message ?? 'Unknown error on load'
   } finally {
     loading.value = false
   }
 })
 
 async function markInProgress(id: number) {
-  await supabase.from('LabRequest').update({ status: 'In Progress' }).eq('request_id', id)
-  await fetchQueue()
+  updating.value = id
+  const { error } = await supabase
+    .from('LabRequest')
+    .update({ status: 'In Progress' })
+    .eq('request_id', id)
+
+  if (error) { errorMsg.value = `Update failed: ${error.message}` }
+  else { await fetchQueue() }
+  updating.value = null
 }
 
 async function markComplete(id: number) {
-  await supabase.from('LabRequest').update({ status: 'Completed' }).eq('request_id', id)
-  await fetchQueue()
+  updating.value = id
+  const { error } = await supabase
+    .from('LabRequest')
+    .update({ status: 'Completed' })
+    .eq('request_id', id)
+
+  if (error) { errorMsg.value = `Update failed: ${error.message}` }
+  else { await fetchQueue() }
+  updating.value = null
 }
 
 function openResultForm(req: any) {
@@ -161,23 +204,18 @@ function openResultForm(req: any) {
 async function submitResult() {
   if (!currentReq.value) return
   submitting.value = true
-  try {
-    const { error } = await supabase.from('TestResult').insert({
-      request_id:    currentReq.value.request_id,
-      test_type_id:  resultForm.test_type_id,
-      technician_id: resultForm.technician_id,
-      result_value:  resultForm.result_value,
-      remarks:       resultForm.remarks,
-      result_date:   new Date().toISOString().split('T')[0]
-    })
-    if (error) throw error
-    showResultModal.value = false
-    await fetchQueue()
-  } catch (e) {
-    console.error(e)
-  } finally {
-    submitting.value = false
-  }
+  const { error } = await supabase.from('TestResult').insert({
+    request_id:    currentReq.value.request_id,
+    test_type_id:  Number(resultForm.test_type_id),
+    technician_id: Number(resultForm.technician_id),
+    result_value:  resultForm.result_value,
+    remarks:       resultForm.remarks,
+    result_date:   new Date().toISOString().split('T')[0]
+  })
+
+  if (error) { errorMsg.value = `Save failed: ${error.message}` }
+  else { showResultModal.value = false; await fetchQueue() }
+  submitting.value = false
 }
 
 function formatDate(d: string) {

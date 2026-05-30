@@ -2,10 +2,14 @@
   <div class="space-y-5">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Lab Technicians</h2>
+        <h2 class="text-2xl font-mono font-bold text-[#18265F]">Lab Technicians</h2>
         <p class="text-gray-500 text-sm mt-0.5">Registered laboratory staff</p>
       </div>
       <button @click="openCreate" class="btn-primary">+ Add Technician</button>
+    </div>
+
+    <div v-if="errorMsg" class="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
+      ⚠️ {{ errorMsg }}
     </div>
 
     <div v-if="loading" class="card p-8 text-center text-gray-400">Loading...</div>
@@ -20,13 +24,15 @@
         <p class="text-xs text-green-700 font-medium mt-0.5 bg-green-50 inline-block px-2 py-0.5 rounded-full">{{ t.license_number }}</p>
         <div class="mt-3 space-y-1 text-sm text-gray-500">
           <p>📧 {{ t.email }}</p>
-          <p>📞 {{ t.TechnicianContactNumber?.[0]?.tcontact_number || '—' }}</p>
-          <p>📊 {{ t.TestResult?.length ?? 0 }} result(s) recorded</p>
+          <p>📊 {{ t.resultCount ?? 0 }} result(s) recorded</p>
         </div>
         <div class="flex gap-2 mt-4 pt-3 border-t border-gray-100">
           <button @click="openEdit(t)" class="btn-secondary text-xs px-3 py-1.5">Edit</button>
           <button @click="del(t.technician_id)" class="btn-danger text-xs px-3 py-1.5">Delete</button>
         </div>
+      </div>
+      <div v-if="!technicians.length" class="col-span-3 card p-12 text-center text-gray-400">
+        No technicians found.
       </div>
     </div>
 
@@ -60,25 +66,41 @@ const submitting  = ref(false)
 const showModal   = ref(false)
 const editMode    = ref(false)
 const editId      = ref<number | null>(null)
+const errorMsg    = ref('')
 
 const blank = () => ({ first_name: '', last_name: '', email: '', license_number: '' })
 const form  = reactive({ ...blank() })
 
 async function fetchTechnicians() {
-  const { data } = await supabase
+  errorMsg.value = ''
+  // Simple fetch — no nested relations to avoid FK config issues
+  const { data: techs, error: techError } = await supabase
     .from('LabTechnician')
-    .select('*, TechnicianContactNumber(tcontact_number), TestResult(result_id)')
-  technicians.value = data ?? []
+    .select('*')
+    .order('last_name', { ascending: true })
+
+  if (techError) { errorMsg.value = `Failed to load technicians: ${techError.message}`; return }
+
+  // Separately fetch result counts
+  const { data: results } = await supabase
+    .from('TestResult')
+    .select('technician_id')
+
+  const countMap: Record<number, number> = {}
+  for (const r of results ?? []) {
+    countMap[r.technician_id] = (countMap[r.technician_id] ?? 0) + 1
+  }
+
+  technicians.value = (techs ?? []).map(t => ({
+    ...t,
+    resultCount: countMap[t.technician_id] ?? 0
+  }))
 }
 
 onMounted(async () => {
-  try {
-    await fetchTechnicians()
-  } catch (e) {
-    console.error(e)
-  } finally {
-    loading.value = false
-  }
+  try { await fetchTechnicians() }
+  catch (e: any) { errorMsg.value = e.message }
+  finally { loading.value = false }
 })
 
 function openCreate() {
@@ -101,22 +123,26 @@ function openEdit(t: any) {
 
 async function del(id: number) {
   if (!confirm('Delete this technician?')) return
-  await supabase.from('LabTechnician').delete().eq('technician_id', id)
+  const { error } = await supabase.from('LabTechnician').delete().eq('technician_id', id)
+  if (error) { errorMsg.value = `Delete failed: ${error.message}`; return }
   await fetchTechnicians()
 }
 
 async function submit() {
   submitting.value = true
+  errorMsg.value   = ''
   try {
     if (editMode.value) {
-      await supabase.from('LabTechnician').update({ ...form }).eq('technician_id', editId.value)
+      const { error } = await supabase.from('LabTechnician').update({ ...form }).eq('technician_id', editId.value)
+      if (error) throw error
     } else {
-      await supabase.from('LabTechnician').insert({ ...form })
+      const { error } = await supabase.from('LabTechnician').insert({ ...form })
+      if (error) throw error
     }
     showModal.value = false
     await fetchTechnicians()
-  } catch (e) {
-    console.error(e)
+  } catch (e: any) {
+    errorMsg.value = `Save failed: ${e.message}`
   } finally {
     submitting.value = false
   }

@@ -47,8 +47,6 @@
         <NavItem to="/doctor/dashboard"  :icon="LayoutDashboard" label="Dashboard" />
         <NavItem to="/doctor/requests"   :icon="ClipboardList" label="Lab Requests" />
         <NavItem to="/doctor/patients"   :icon="Users" label="Patients" />
-        <NavItem to="/doctor/doctors"    :icon="UserRound" label="Doctors" />
-        <NavItem to="/doctor/test-types" :icon="FlaskConical" label="Test Types" />
       </nav>
 
       <!-- Footer -->
@@ -164,8 +162,6 @@ import {
   LayoutDashboard,
   ClipboardList,
   Users,
-  UserRound,
-  FlaskConical,
   ArrowLeft
 } from 'lucide-vue-next'
 

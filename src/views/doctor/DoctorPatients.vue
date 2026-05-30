@@ -59,7 +59,7 @@
         </div>
 
         <div class="grid grid-cols-2 gap-3">
-          <div><label class="block text-xs font-bold text-gray-700 mb-1">Date of Birth</label><input type="date" v-model="form.date_of_birth" required class="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm" /></div>
+          <div><label class="block text-xs font-bold text-gray-700 mb-1">Date of Birth</label><input type="date" v-model="form.birth_date" required class="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm" /></div>
           <div>
             <label class="block text-xs font-bold text-gray-700 mb-1">Sex</label>
             <select v-model="form.sex" required class="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm bg-white">
@@ -106,10 +106,10 @@ const isSaving = ref(false)
 const search = ref('')
 const showModal = ref(false)
 const editMode = ref(false)
-const editId = ref('')
+const editId = ref<number | null>(null)
 
 const blank = () => ({
-  first_name: '', middle_name: '', last_name: '', date_of_birth: '', sex: 'F',
+  first_name: '', middle_name: '', last_name: '', birth_date: '', sex: 'F',
   email: '', contact_number: '', address: '', height: null as number | null, weight: null as number | null
 })
 const form = reactive({ ...blank() })
@@ -151,14 +151,14 @@ function openCreate() {
 }
 
 function openEdit(p: any) {
-  const { patient_id, ...rest } = p
+  const { patients_id, ...rest } = p
   Object.assign(form, rest)
-  editId.value = patient_id
+  editId.value = patients_id
   editMode.value = true
   showModal.value = true
 }
 
-async function del(id: string) {
+async function del(id: number) {
   if (!confirm('Are you sure you want to delete this patient? This cannot be undone.')) return
   try {
     await patientListings.deletePatient(id)
@@ -172,7 +172,7 @@ async function del(id: string) {
 async function submit() {
   isSaving.value = true
   try {
-    if (editMode.value) {
+    if (editMode.value && editId.value !== null) {
       await patientListings.updatePatient(editId.value, { ...form })
     } else {
       await patientListings.addPatientAndLinkToDoctor({ ...form }, currentDoctor.value.doctor_id)

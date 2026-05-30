@@ -161,7 +161,6 @@ import {
   Activity,
  
 } from 'lucide-vue-next'
-const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 const patientName = ref('')
 
 onMounted(async () => {

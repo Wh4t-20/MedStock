@@ -17,12 +17,12 @@
 
     <div v-if="loading" class="card p-12 text-center text-gray-400">Loading your requests...</div>
 
+    <div v-else-if="errorMsg" class="card p-8 text-center text-red-500">⚠️ {{ errorMsg }}</div>
+
     <div v-else-if="!filtered.length" class="card p-12 text-center text-gray-400">No lab requests found.</div>
 
     <div v-else class="space-y-4">
       <div v-for="req in filtered" :key="req.request_id" class="card p-5">
-
-        <!-- Request header -->
         <div class="flex items-center justify-between mb-4">
           <div>
             <p class="font-mono text-primary-700 font-bold text-sm">{{ req.request_id }}</p>
@@ -33,7 +33,6 @@
           <StatusBadge :status="req.status" />
         </div>
 
-        <!-- Test results -->
         <div v-if="req.TestResult?.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           <div v-for="result in req.TestResult" :key="result.result_id"
             class="p-3 rounded-xl border border-green-200 bg-green-50">
@@ -46,11 +45,8 @@
             <p class="text-xs text-primary-600 mt-1">
               By {{ result.LabTechnician?.first_name }} {{ result.LabTechnician?.last_name }}
             </p>
-            <p class="text-xs text-gray-400 mt-1">{{ formatDate(result.result_date) }}</p>
           </div>
         </div>
-
-        <!-- No results yet -->
         <div v-else class="p-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-amber-600">
           Awaiting results…
         </div>
@@ -65,25 +61,29 @@
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '@/api/supabase'
 import StatusBadge from '@/components/StatusBadge.vue'
-import { patientListings } from '@/services/patientListings' // Brought your service in!
 
 const requests     = ref<any[]>([])
 const filterStatus = ref('')
 const loading      = ref(true)
+const errorMsg     = ref('')
 
 onMounted(async () => {
   try {
-    loading.value = true
+    // Get logged-in user
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) { errorMsg.value = 'Not authenticated.'; return }
 
-    // 1. Let your service handle finding who the logged-in patient is
-    const patient = await patientListings.getCurrentPatient()
-    
-    if (!patient) return
+    // Find patient record — use maybeSingle so it doesn't throw if not found
+    const { data: p, error: pError } = await supabase
+      .from('Patient')
+      .select('patients_id')
+      .eq('user_id', user.id)
+      .maybeSingle()
 
-    // Account for your database column name (using the 's')
-    const pid = patient.patients_id || patient.patient_id
+    if (pError) { errorMsg.value = `Patient lookup failed: ${pError.message}`; return }
+    if (!p)     { errorMsg.value = 'No patient profile linked to this account.'; return }
 
-    // 2. Fetch all their requests, joined with Doctor and Test Results
+    // Fetch requests with joins — LabRequest.patient_id references Patient.patients_id
     const { data, error } = await supabase
       .from('LabRequest')
       .select(`
@@ -95,29 +95,23 @@ onMounted(async () => {
           LabTechnician(first_name, last_name)
         )
       `)
-      .eq('patient_id', pid)
+      .eq('patient_id', p.patients_id)
       .order('request_date', { ascending: false })
 
-    if (error) {
-      console.error("Supabase relation error:", error)
-      throw error
-    }
-    
+    if (error) { errorMsg.value = `Requests fetch failed: ${error.message}`; return }
     requests.value = data ?? []
-    
-  } catch (e) {
-    console.error("Could not load requests:", e)
+  } catch (e: any) {
+    errorMsg.value = e.message ?? 'Unexpected error'
   } finally {
     loading.value = false
   }
 })
 
-// Filter logic for your dropdown menu
+// Filter by selected status — works on the already-fetched requests array
 const filtered = computed(() =>
   requests.value.filter(r => !filterStatus.value || r.status === filterStatus.value)
 )
 
-// Date formatter
 function formatDate(d: string) {
   if (!d) return '—'
   return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
