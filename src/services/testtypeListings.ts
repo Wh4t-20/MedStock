@@ -7,16 +7,50 @@ export interface TestTypeInsert {
     normal_range?: string
 }
 
+export type TestTypeUpdate = Partial<TestTypeInsert>
+
 export const testypeListings = {
-  
-    // --- READ ---
-    async getAllT() {
-      const { data, error } = await supabase
-        .from('LabTechnician') 
-        .select('*, LabTechContactNumber(tcontact_number)')
-        .order('last_name', { ascending: true })
-  
-      if (error) throw error
-      return data
+
+    async getAllTestTypes() {
+        const { data, error } = await supabase
+            .from('TestType')
+            .select('*')
+            .order('test_name', { ascending: true })
+
+        if (error) throw error
+        return data
     },
+
+    async createTestType(newData: TestTypeInsert) {
+        const { data, error } = await supabase
+            .from('TestType')
+            .insert([newData])
+            .select()
+            .single()
+
+        if (error) throw error
+        return data
+    },
+
+    async updateTestType(id: number, updates: TestTypeUpdate) {
+        const { data, error } = await supabase
+            .from('TestType')
+            .update(updates)
+            .eq('test_type_id', id)
+            .select()
+            .single()
+
+        if (error) throw error
+        return data
+    },
+
+    async deleteTestType(id: number) {
+        const { error } = await supabase
+            .from('TestType')
+            .delete()
+            .eq('test_type_id', id)
+
+        if (error) throw error
+        return true
+    }
 }

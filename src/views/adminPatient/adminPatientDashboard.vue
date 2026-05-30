@@ -61,11 +61,11 @@
 import { ref, onMounted } from 'vue'
 import StatCard    from '@/components/StatCard.vue'
 import { patientListings } from '@/services/patientListings'
-import { RouterLink, useRouter } from 'vue-router' 
+import { RouterLink } from 'vue-router'
 
 const isLoadingProfile = ref(true)
 const Patients = ref<any[]>([])
-const router = useRouter()
+
 onMounted(async () => {
   try {
     isLoadingProfile.value = true

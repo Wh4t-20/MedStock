@@ -256,7 +256,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { patientListings } from '@/services/patientListings'
 import Modal from '@/components/Modal.vue'
 import { doctorListings } from '@/services/doctorListings'
@@ -267,7 +266,7 @@ const Patients = ref<any[]>([])
 
 // Modal & Form State
 const showModal = ref(false)
-const currentEditId = ref<string | null>(null)
+const currentEditId = ref<number | null>(null)
 
 const form = ref({
   first_name: '',
@@ -322,7 +321,7 @@ onMounted(async () => {
 })
 
 const openEdit = (patient: any) => {
-  currentEditId.value = patient.patients_id
+  currentEditId.value = Number(patient.patients_id)
   
   form.value = {
     first_name: patient.first_name || '',
@@ -390,7 +389,7 @@ const submitAddPatient = async () => {
 }
 
 // 3. Delete a Patient
-const del = async (id: string) => {
+const del = async (id: number) => {
   if (!confirm("Are you sure you want to permanently delete this patient?")) {
     return
   }

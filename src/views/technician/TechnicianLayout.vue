@@ -45,7 +45,6 @@
         <NavItem to="/technician/dashboard" :icon="LayoutDashboard" label="Dashboard" />
         <NavItem to="/technician/queue"     :icon="Layers" label="Test Queue" />
         <NavItem to="/technician/results"   :icon="BookSearch" label="Results" />
-        <NavItem to="/technician/directory" :icon="UserRound" label="Technicians" />
       </nav>
       <div class="p-4 border-t border-white/10 shrink-0 space-y-2">
 
@@ -156,7 +155,6 @@ import {
   LayoutDashboard,
   Layers,
   BookSearch,
-  UserRound,
   ArrowLeft
 } from 'lucide-vue-next'
 
