@@ -45,25 +45,35 @@ export const patientListings = {
     return data
   },
 
-  async updatePatient(patientId: string, updates: any) {
-    const { data, error } = await supabase
+  async updatePatient(id: string, formData: any) {
+    // 1. Update the main Patient table (without contact_number)
+    const { error: patientErr } = await supabase
       .from('Patient')
-      .update(updates)
-      .eq('patients_id', patientId) // FIXED: Added 's'
-      .select()
+      .update({
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        birth_date: formData.birth_date,
+        sex: formData.sex,
+        email: formData.email
+      })
+      .eq('patients_id', id);
 
-    if (error) throw error
-    return data
-  },
+    if (patientErr) throw patientErr;
 
-  async deletePatient(patientId: string) {
-    const { error } = await supabase
-      .from('Patient')
-      .delete()
-      .eq('patients_id', patientId) // FIXED: Added 's'
-
-    if (error) throw error
-    return true
+    // 2. Update the separate Contact Number table
+    if (formData.contact_number) {
+      const { error: contactErr } = await supabase
+        .from('PatientContactNumber')
+        .upsert({ 
+          patients_id: id, 
+          pcontact_number: formData.contact_number 
+        })
+        .eq('patients_id', id); 
+        
+      if (contactErr) throw contactErr;
+    }
+    
+    return true;
   },
 
   // CREATE NEW PATIENT AND LINK TO DOCTOR
