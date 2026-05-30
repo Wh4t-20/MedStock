@@ -13,7 +13,7 @@
     <div class="card overflow-hidden bg-white shadow-sm rounded-xl border border-gray-100">
       <div class="flex items-center justify-between p-5 border-b border-gray-100">
         <h3 class="font-semibold font-inter text-[#18265F]">Technicians</h3>
-        <RouterLink to="/admin/technicianslist" class="text-sm text-primary-600 hover:text-primary-800 font-medium">
+        <RouterLink to="/admin-technician/technicians" class="text-sm text-primary-600 hover:text-primary-800 font-medium">
           View all →
         </RouterLink>
       </div>
