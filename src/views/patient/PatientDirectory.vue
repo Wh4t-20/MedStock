@@ -18,14 +18,14 @@
           <p class="text-xl font-bold text-gray-900">
             {{ patient.first_name }} {{ patient.middle_name }} {{ patient.last_name }}
           </p>
-          <p class="text-sm text-primary-600 font-mono">ID: {{ patient.patient_id }}</p>
+          <p class="text-sm text-primary-600 font-mono">ID: {{ patient.patients_id }}</p>
         </div>
       </div>
 
       <div class="grid grid-cols-2 gap-4 text-sm">
         <div>
           <p class="text-gray-400 text-xs mb-1">Date of Birth</p>
-          <p class="font-medium text-gray-800">{{ patient.date_of_birth }}</p>
+          <p class="font-medium text-gray-800">{{ patient.birth_date }}</p>
         </div>
         <div>
           <p class="text-gray-400 text-xs mb-1">Sex</p>
@@ -87,7 +87,7 @@ onMounted(async () => {
     const { data: contact } = await supabase
       .from('PatientContactNumber')
       .select('pcontact_number')
-      .eq('patient_id', p.patient_id)
+      .eq('patient_id', p.patients_id)
       .maybeSingle()
 
     if (contact) contactNumber.value = contact.pcontact_number
