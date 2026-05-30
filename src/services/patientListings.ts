@@ -45,7 +45,7 @@ export const patientListings = {
     return data
   },
 
-async updatePatient(id: string, formData: any) {
+  async updatePatient(id: string, formData: any) {
     // 1. Update the main Patient table (without contact_number)
     const { error: patientErr } = await supabase
       .from('Patient')

@@ -6,14 +6,31 @@ export const doctorListings = {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) throw new Error('Not authenticated')
 
+    // 1. Tell Supabase to grab the doctor AND their nested contact folder
     const { data: doctor, error: dbError } = await supabase
       .from('Doctor')
-      .select('*')
+      .select('*, DoctorContactNumber(dcontact_number)') // <--- Added the relation here!
       .eq('user_id', user.id)
       .single()
 
     if (dbError) throw dbError
-    return doctor
+
+    // 2. Extract the contact number from the nested folder
+    const contactFolder = doctor.DoctorContactNumber;
+    let extractedNumber = '';
+    
+    // Safely pull out the number whether it's an array or an object
+    if (contactFolder && contactFolder.length > 0) {
+      extractedNumber = contactFolder[0].dcontact_number;
+    } else if (contactFolder && contactFolder.dcontact_number) {
+      extractedNumber = contactFolder.dcontact_number;
+    }
+
+    // 3. Return the doctor data with the contact_number property attached
+    return {
+      ...doctor,
+      contact_number: extractedNumber
+    };
   },
 
   async getAllDoctors() {
@@ -26,7 +43,25 @@ export const doctorListings = {
       console.error("Error fetching doctors:", error)
       throw error
     }
-    return data
+
+    // If your code says "return data" here, delete it! 
+    // It MUST be this mapping function so Vue can read the number.
+    return data.map((doc: any) => {
+      const contactFolder = doc.DoctorContactNumber
+      let extractedNumber = ''
+
+      if (contactFolder && contactFolder.length > 0) {
+        extractedNumber = contactFolder[0].dcontact_number
+      } else if (contactFolder && contactFolder.dcontact_number) {
+        extractedNumber = contactFolder.dcontact_number
+      }
+
+      // This injects the flat contact_number property your Vue template is looking for!
+      return {
+        ...doc,
+        contact_number: extractedNumber
+      }
+    })
   },
   
   async createDoctor(newDoctorData: any) {
@@ -74,15 +109,24 @@ export const doctorListings = {
       throw error
     }
 
-    // 2. Update the related contact number. 
-    // We wipe the old one and insert the new one to avoid conflicts if they didn't have one before.
+    // 2. Update the related contact number using Upsert
     if (contact_number !== undefined) {
-      await supabase.from('DoctorContactNumber').delete().eq('doctor_id', doctorId)
-      
-      if (contact_number.trim() !== '') {
-        await supabase
+      if (contact_number.trim() === '') {
+        // If the field was cleared, cleanly delete the number from the database
+        await supabase.from('DoctorContactNumber').delete().eq('doctor_id', doctorId)
+      } else {
+        // Upsert: Updates the number if it exists, inserts it if they didn't have one before
+        const { error: contactErr } = await supabase
           .from('DoctorContactNumber')
-          .insert([{ doctor_id: doctorId, dcontact_number: contact_number }])
+          .upsert({ 
+            doctor_id: doctorId, 
+            dcontact_number: contact_number 
+          })
+          .eq('doctor_id', doctorId);
+          
+        if (contactErr) {
+          console.error("Error updating contact number:", contactErr);
+        }
       }
     }
 

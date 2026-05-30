@@ -28,16 +28,17 @@
               <th class="p-4 font-semibold">Last Name</th>
               <th class="p-4 font-semibold">Specialization</th>
               <th class="p-4 font-semibold">Email</th>
+              <th class="p-4 font-semibold">Contact Number</th>
             </tr>
           </thead>
           <tbody>
             
             <tr v-if="isLoadingProfile">
-              <td colspan="6" class="p-8 text-center text-gray-400 font-medium">Loading doctors...</td>
+              <td colspan="7" class="p-8 text-center text-gray-400 font-medium">Loading doctors...</td>
             </tr>
             
             <tr v-else-if="Doctors.length === 0">
-              <td colspan="6" class="p-8 text-center text-gray-400 font-medium">No Doctors found in the database.</td>
+              <td colspan="7" class="p-8 text-center text-gray-400 font-medium">No Doctors found in the database.</td>
             </tr>
 
             <tr v-else v-for="doctor in Doctors" :key="doctor.doctor_id" class="border-b border-gray-50 hover:bg-blue-50 transition-colors">
@@ -47,6 +48,7 @@
               <td class="p-4 font-bold text-gray-900">{{ doctor.last_name }}</td>
               <td class="p-4 text-gray-600 font-medium">{{ doctor.specialization }}</td>
               <td class="p-4 text-gray-600">{{ doctor.email || 'No email' }}</td>
+              <td class="p-4 text-gray-600">{{ doctor.contact_number || '—' }}</td>
             </tr>
             
           </tbody>
